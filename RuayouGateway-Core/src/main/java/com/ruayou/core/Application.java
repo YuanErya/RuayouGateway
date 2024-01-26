@@ -1,4 +1,4 @@
-package com.ruayou;
+package com.ruayou.core;
 
 /**
  * @Author：ruayou
