@@ -1,6 +1,6 @@
-import com.ruayou.core.netty.HttpServer;
+import com.ruayou.core.netty.NettyHttpServer;
 import com.ruayou.core.netty.NettyServerConfig;
-import org.junit.Test;
+import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 
 /**
  * @Author：ruayou
@@ -11,14 +11,14 @@ import org.junit.Test;
 public class NettyServerTest {
 
     public void startServer(){
-        HttpServer server = new HttpServer(new NettyServerConfig());
-        server.init();
-        server.start();
-        System.out.println("ss");
+//        NettyHttpServer server = new NettyHttpServer(new NettyServerConfig());
+//        server.init();
+//        server.start();
+//        System.out.println("ss");
     }
 
     public static void main(String[] args) {
-        HttpServer server = new HttpServer(new NettyServerConfig());
+        NettyHttpServer server = new NettyHttpServer(new NettyServerConfig(),new HttpServerCoreProcessor());
         server.init();
         server.start();
     }

@@ -1,7 +1,9 @@
 package com.ruayou.core.netty;
 
+import com.ruayou.core.ContainerComponent;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.core.netty.handler.HttpServerHandler;
+import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -22,14 +24,17 @@ import lombok.extern.log4j.Log4j2;
  * netty服务端,用于接收处理Http请求
  */
 @Log4j2
-public class HttpServer implements LifeCycle {
+public class NettyHttpServer extends ContainerComponent implements LifeCycle {
     private final NettyServerConfig config;
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossEventLoopGroup;
     private EventLoopGroup workerEventLoopGroup;
+    private HttpProcessor processor;
 
-    public HttpServer(NettyServerConfig config) {
+    public NettyHttpServer(NettyServerConfig config,HttpProcessor processor) {
         this.config = config;
+        this.processor=processor;
+        super.registerComponent(this);
     }
 
     @Override
@@ -53,7 +58,7 @@ public class HttpServer implements LifeCycle {
                                 new HttpServerCodec(),//解码出来的请求头和请求体是分离的，下面的处理器能合并完整的请求
                                 new HttpObjectAggregator(config.getMaxContentLength()), // 聚合HTTP请求
                                 new HttpServerExpectContinueHandler(), // 处理HTTP 100 Continue请求
-                                new HttpServerHandler()
+                                new HttpServerHandler(processor)
                         );
                     }
                 });

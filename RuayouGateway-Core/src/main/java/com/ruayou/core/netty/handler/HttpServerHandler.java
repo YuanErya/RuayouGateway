@@ -1,5 +1,7 @@
 package com.ruayou.core.netty.handler;
 
+import com.ruayou.core.context.HttpRequestWrapper;
+import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -16,16 +18,17 @@ import java.nio.charset.Charset;
  */
 @Log4j2
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
+    private final HttpProcessor processor;
+    public HttpServerHandler(HttpProcessor processor){
+        this.processor=processor;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
         //调试打印请求的详细信息
         log.debug("\nHEADER:\n{} \nBODY:\n{}",request,request.content().toString(Charset.defaultCharset()));
-        DefaultFullHttpResponse response = new DefaultFullHttpResponse(((FullHttpRequest) msg).protocolVersion(), HttpResponseStatus.OK);
-        response.content().writeBytes("success".getBytes(Charset.defaultCharset()));
-        ctx.writeAndFlush(response);
-        ctx.close();
+        processor.process(new HttpRequestWrapper(request,ctx));
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
