@@ -4,9 +4,7 @@ import com.ruayou.core.context.HttpRequestWrapper;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.log4j.Log4j2;
 
 import java.nio.charset.Charset;

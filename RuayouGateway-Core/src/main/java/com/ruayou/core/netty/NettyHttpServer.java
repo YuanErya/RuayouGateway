@@ -1,6 +1,5 @@
 package com.ruayou.core.netty;
 
-import com.ruayou.core.ContainerComponent;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.core.netty.handler.HttpServerHandler;
 import com.ruayou.core.netty.processor.HttpProcessor;
@@ -24,17 +23,21 @@ import lombok.extern.log4j.Log4j2;
  * netty服务端,用于接收处理Http请求
  */
 @Log4j2
-public class NettyHttpServer extends ContainerComponent implements LifeCycle {
+public class NettyHttpServer implements LifeCycle {
     private final NettyServerConfig config;
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossEventLoopGroup;
+
+    public EventLoopGroup getWorkerEventLoopGroup() {
+        return workerEventLoopGroup;
+    }
+
     private EventLoopGroup workerEventLoopGroup;
-    private HttpProcessor processor;
+    private final HttpProcessor processor;
 
     public NettyHttpServer(NettyServerConfig config,HttpProcessor processor) {
         this.config = config;
         this.processor=processor;
-        super.registerComponent(this);
     }
 
     @Override

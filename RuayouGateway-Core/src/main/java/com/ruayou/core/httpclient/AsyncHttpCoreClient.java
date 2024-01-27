@@ -1,6 +1,5 @@
 package com.ruayou.core.httpclient;
 
-import com.ruayou.core.ContainerComponent;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.core.helper.AsyncHttpHelper;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -19,7 +18,7 @@ import java.io.IOException;
  * @Filename：AsyncHttpCoreClient
  */
 @Log4j2
-public class AsyncHttpCoreClient extends ContainerComponent implements LifeCycle {
+public class AsyncHttpCoreClient implements LifeCycle {
     private AsyncHttpClient httpClient;
     private final HttpClientConfig config;
     private final EventLoopGroup worker;
@@ -27,7 +26,6 @@ public class AsyncHttpCoreClient extends ContainerComponent implements LifeCycle
     public AsyncHttpCoreClient(HttpClientConfig config, EventLoopGroup worker) {
         this.worker = worker;
         this.config = config;
-        super.registerComponent(this);
     }
 
     @Override
