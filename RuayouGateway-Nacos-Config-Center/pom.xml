@@ -9,27 +9,12 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>RuayouGateway-Core</artifactId>
+    <artifactId>RuayouGateway-Nacos-Config-Center</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.ruayou</groupId>
-            <artifactId>RuayouGateway-Common</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ruayou</groupId>
-            <artifactId>RuayouGateway-Nacos-Register-Center</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
 </project>

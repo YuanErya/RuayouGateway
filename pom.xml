@@ -11,6 +11,9 @@
 
     <modules>
         <module>RuayouGateway-Core</module>
+        <module>RuayouGateway-Nacos-Register-Center</module>
+        <module>RuayouGateway-Common</module>
+        <module>RuayouGateway-Nacos-Config-Center</module>
     </modules>
 
     <properties>
@@ -20,6 +23,7 @@
         <netty.version>4.1.87.Final</netty.version>
         <async-http-client.version>2.0.37</async-http-client.version>
         <log4j2.version>2.11.1</log4j2.version>
+        <fastjson.version>2.0.26</fastjson.version>
         <lombok.version>1.18.30</lombok.version>
         <junit.version>4.12</junit.version>
 
@@ -42,6 +46,11 @@
             <groupId>org.asynchttpclient</groupId>
             <artifactId>async-http-client-netty-utils</artifactId>
             <version>${async-http-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <dependency>
