@@ -59,7 +59,7 @@ public class NacosRegisterCenter implements RegisterCenter {
      */
     private NamingMaintainService namingMaintainService;
 
-    private List<RegisterCenterListener> registerCenterListenerList = new CopyOnWriteArrayList<>();
+    private final List<RegisterCenterListener> registerCenterListenerList = new CopyOnWriteArrayList<>();
 
     @Override
     public void init(String registerAddress, String env) {
@@ -119,7 +119,7 @@ public class NacosRegisterCenter implements RegisterCenter {
         ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1, new NameThreadFactory(
                 "doSubscribeAllServices"));
         //循环执行服务发现与订阅操作
-        scheduledThreadPool.scheduleWithFixedDelay(() -> doSubscribeAllServices(), 10, 10, TimeUnit.SECONDS);
+        scheduledThreadPool.scheduleWithFixedDelay(this::doSubscribeAllServices, 10, 10, TimeUnit.SECONDS);
     }
 
     private void doSubscribeAllServices() {
@@ -130,24 +130,18 @@ public class NacosRegisterCenter implements RegisterCenter {
             Set<String> subscribeServiceSet =
                     namingService.getSubscribeServices().stream().map(ServiceInfo::getName).collect(Collectors.toSet());
 
-
             int pageNo = 1;
             int pageSize = 100;
-
-
             //分页从nacos拿到所有的服务列表
             List<String> serviseList = namingService.getServicesOfServer(pageNo, pageSize, env).getData();
-
             //拿到所有的服务名称后进行遍历
             while (CollectionUtils.isNotEmpty(serviseList)) {
-                log.info("service list size {}", serviseList.size());
-
+                log.debug("service list size {}", serviseList.size());
                 for (String service : serviseList) {
                     //判断是否已经订阅了当前服务
                     if (subscribeServiceSet.contains(service)) {
                         continue;
                     }
-                    log.info("查询到未订阅服务！");
                     //nacos事件监听器 订阅当前服务
                     //这里我们需要自己实现一个nacos的事件订阅类 来具体执行订阅执行时的操作
                     EventListener eventListener = new NacosRegisterListener();
@@ -155,12 +149,11 @@ public class NacosRegisterCenter implements RegisterCenter {
                     eventListener.onEvent(new NamingEvent(service, null));
                     //为指定的服务和环境注册一个事件监听器
                     namingService.subscribe(service, env, eventListener);
-                    log.info("subscribe a service ，ServiceName {} Env {}", service, env);
+                    log.info("subscribe a service ，ServiceName: {} Env: {}", service, env);
                 }
                 //遍历下一页的服务列表
                 serviseList = namingService.getServicesOfServer(++pageNo, pageSize, env).getData();
             }
-
         } catch (NacosException e) {
             throw new RuntimeException(e);
         }
@@ -172,13 +165,10 @@ public class NacosRegisterCenter implements RegisterCenter {
         @Override
         public void onEvent(Event event) {
             //先判断是否是注册中心事件
-            if (event instanceof NamingEvent) {
-                log.info("注册中心事件！");
+            if (event instanceof NamingEvent namingEvent) {
                 log.info("the triggered event info is：{}", JSON.toJSON(event));
-                NamingEvent namingEvent = (NamingEvent) event;
                 //获取当前变更的服务名
                 String serviceName = namingEvent.getServiceName();
-
                 try {
                     //获取服务定义信息
                     Service service = namingMaintainService.queryService(serviceName, env);
@@ -186,32 +176,18 @@ public class NacosRegisterCenter implements RegisterCenter {
                     ServiceDefinition serviceDefinition =
                             JSON.parseObject(service.getMetadata().get(GatewayConst.META_DATA_KEY),
                                     ServiceDefinition.class);
-
                     //获取服务实例信息
                     List<Instance> allInstances = namingService.getAllInstances(service.getName(), env);
                     Set<ServiceInstance> set = new HashSet<>();
 
-                    /**
-                     * meta-data数据如下
-                     * {
-                     *   "version": "1.0.0",
-                     *   "environment": "production",
-                     *   "weight": 80,
-                     *   "region": "us-west",
-                     *   "labels": "web, primary",
-                     *   "description": "Main production service"
-                     * }
-                     */
                     for (Instance instance : allInstances) {
-                        log.info("实例的元数据：{}", instance.getMetadata());
                         ServiceInstance serviceInstance =
                                 JSON.parseObject(instance.getMetadata().get(GatewayConst.META_DATA_KEY),
                                         ServiceInstance.class);
                         set.add(serviceInstance);
                     }
                     //调用我们自己的订阅监听器
-                    //TODO 这里得好好理一下思路 为什么要怎么写 什么作用?
-                    registerCenterListenerList.stream().forEach(registerCenterListener ->
+                    registerCenterListenerList.forEach(registerCenterListener ->
                             registerCenterListener.onChange(serviceDefinition, set));
                 } catch (NacosException e) {
                     throw new RuntimeException(e);

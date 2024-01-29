@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Configuration status="DEBUG" schema="Log4J-V2.0.xsd" monitorInterval="600">
+<Configuration status="INFO" schema="Log4J-V2.0.xsd" monitorInterval="600">
 
     <Properties>
         <!-- 	配置日志文件输出目录,此处为项目根目录下的logs文件夹 -->
@@ -40,13 +40,13 @@
 
     <Loggers>
 
-        <Logger name="com.ruayou.core.*" level="DEBUG" includeLocation="true">
+        <Logger name="com.ruayou.core.*" level="INFO" includeLocation="true">
             <AppenderRef ref="RandomAccessFile"/>
         </Logger>
-        <Logger name="accessLog" level="DEBUG" includeLocation="false">
+        <Logger name="accessLog" level="INFO" includeLocation="false">
             <AppenderRef ref="AccessLogFile"/>
         </Logger>
-        <Root level="DEBUG">
+        <Root level="INFO">
             <Appender-Ref ref="CONSOLE"/>
             <Appender-Ref ref="accessLog"/>
             <Appender-Ref ref="RandomAccessFile"/>
