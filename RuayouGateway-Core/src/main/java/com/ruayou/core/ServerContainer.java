@@ -14,7 +14,6 @@ import com.ruayou.core.netty.processor.HttpProcessor;
 import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 import com.ruayou.register_center.nacosimpl.NacosRegisterCenter;
 import lombok.extern.log4j.Log4j2;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,7 @@ public class ServerContainer implements LifeCycle{
         run.add(server);
         run.add(new AsyncHttpCoreClient(httpClientConfig,server.getWorkerEventLoopGroup()));
         run.forEach(LifeCycle::init);
+        this.initFlag=true;
     }
 
     @Override

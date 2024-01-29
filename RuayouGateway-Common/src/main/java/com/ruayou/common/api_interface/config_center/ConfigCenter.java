@@ -14,5 +14,5 @@ public interface ConfigCenter {
      * 订阅配置中心配置变更
      * @param listener  配置变更监听器
      */
-    void subscribeRulesChange(RulesChangeListener listener);
+    void subscribeConfigChange(String dataId,ConfigChangeListener listener);
 }
