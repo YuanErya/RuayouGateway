@@ -24,6 +24,7 @@
         <async-http-client.version>2.0.37</async-http-client.version>
         <log4j2.version>2.11.1</log4j2.version>
         <fastjson.version>2.0.26</fastjson.version>
+        <yaml.version>1.30</yaml.version>
         <lombok.version>1.18.30</lombok.version>
         <junit.version>4.12</junit.version>
 
@@ -51,6 +52,11 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${yaml.version}</version>
         </dependency>
 
         <dependency>

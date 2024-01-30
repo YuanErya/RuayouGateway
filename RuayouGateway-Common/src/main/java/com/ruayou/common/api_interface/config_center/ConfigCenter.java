@@ -2,7 +2,6 @@ package com.ruayou.common.api_interface.config_center;
 
 
 public interface ConfigCenter {
-
     /**
      * 初始化配置中心配置
      * @param serverAddr  配置中心地址

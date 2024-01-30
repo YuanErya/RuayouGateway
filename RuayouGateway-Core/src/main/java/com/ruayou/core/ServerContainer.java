@@ -1,18 +1,25 @@
 package com.ruayou.core;
 
 import com.alibaba.fastjson2.JSON;
+import com.ruayou.common.api_interface.Config;
+import com.ruayou.common.api_interface.config_center.ConfigCenter;
+import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.api_interface.register_center.RegisterCenterListener;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.utils.NetUtils;
+import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
+import com.ruayou.common.config.GlobalConfig;
+import com.ruayou.common.config.NacosConfig;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
-import com.ruayou.core.httpclient.HttpClientConfig;
+import com.ruayou.common.config.HttpClientConfig;
 import com.ruayou.core.netty.NettyHttpServer;
-import com.ruayou.core.netty.NettyServerConfig;
+import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 import com.ruayou.register_center.nacosimpl.NacosRegisterCenter;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,26 +32,32 @@ import java.util.Set;
  * @Filename：ServerContainer
  */
 @Log4j2
+@Data
 public class ServerContainer implements LifeCycle{
-    private final NettyServerConfig nettyServerconfig;
+    private final GlobalConfig globalConfig;
     private final HttpClientConfig httpClientConfig;
+    private final NettyServerConfig nettyServerConfig;
+    private final NacosConfig nacosConfig;
     private HttpProcessor processor;
     boolean initFlag=false;
 
     private static final  ArrayList<LifeCycle> run=new ArrayList<>();
-    public ServerContainer(NettyServerConfig nettyServerconfig, HttpClientConfig httpClientConfig) {
-        this.nettyServerconfig = nettyServerconfig;
-        this.httpClientConfig=httpClientConfig;
+    public ServerContainer(GlobalConfig config) {
+        this.globalConfig = config;
+        this.httpClientConfig=config.getHttpClientConfig();
+        this.nettyServerConfig=config.getNettyServerConfig();
+        this.nacosConfig=config.getNacosConfig();
     }
     @Override
     public void init() {
         if (initFlag) {
             return;
         }
+        //后期调整核心处理器
         HttpServerCoreProcessor coreProcessor=new HttpServerCoreProcessor();
         this.processor=coreProcessor;
         run.add(processor);
-        NettyHttpServer server = new NettyHttpServer(nettyServerconfig, processor);
+        NettyHttpServer server = new NettyHttpServer(nettyServerConfig, processor);
         run.add(server);
         run.add(new AsyncHttpCoreClient(httpClientConfig,server.getWorkerEventLoopGroup()));
         run.forEach(LifeCycle::init);
@@ -57,8 +70,16 @@ public class ServerContainer implements LifeCycle{
             init();
         }
         run.forEach(LifeCycle::start);
-        RegisterCenter registerCenter = registerAndSubscribe(nettyServerconfig);
-        log.info("RuayouGateway网关启动成功，正在监听端口：{}", this.nettyServerconfig.getPort());
+        RegisterCenter registerCenter = registerAndSubscribe(nacosConfig,nettyServerConfig);
+        ConfigCenter configCenter=new NacosConfigCenter();
+        configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
+        configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
+            @Override
+            public void onConfigChange(Config config) {
+                log.info("检测到配置更新：{}",config);
+            }
+        });
+        log.info("RuayouGateway网关启动成功，正在监听端口：{}", this.nettyServerConfig.getPort());
     }
 
     @Override
@@ -76,12 +97,12 @@ public class ServerContainer implements LifeCycle{
 
 
 
-    private static RegisterCenter registerAndSubscribe(NettyServerConfig config) {
+    private static RegisterCenter registerAndSubscribe(NacosConfig config,NettyServerConfig nettyServerConfig) {
         final RegisterCenter registerCenter = new NacosRegisterCenter();
         registerCenter.init(config.getRegistryAddress(), config.getEnv());
         //构造网关服务定义和服务实例
         ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(config);
-        ServiceInstance serviceInstance = buildGatewayServiceInstance(config);
+        ServiceInstance serviceInstance = buildGatewayServiceInstance(nettyServerConfig);
         //注册
         registerCenter.register(serviceDefinition, serviceInstance);
         //订阅
@@ -101,9 +122,9 @@ public class ServerContainer implements LifeCycle{
         return registerCenter;
     }
 
-    private static ServiceInstance buildGatewayServiceInstance(NettyServerConfig config) {
+    private static ServiceInstance buildGatewayServiceInstance(NettyServerConfig nettyServerConfig) {
         String localIp = NetUtils.getLocalIp();
-        int port = config.getPort();
+        int port = nettyServerConfig.getPort();
         ServiceInstance serviceInstance = new ServiceInstance();
         serviceInstance.setServiceInstanceId(localIp + ":" + port);
         serviceInstance.setIp(localIp);
@@ -112,7 +133,7 @@ public class ServerContainer implements LifeCycle{
         return serviceInstance;
     }
 
-    private static ServiceDefinition buildGatewayServiceDefinition(NettyServerConfig config) {
+    private static ServiceDefinition buildGatewayServiceDefinition(NacosConfig config) {
         String applicationName = config.getApplicationName();
         ServiceDefinition serviceDefinition = new ServiceDefinition();
         serviceDefinition.setInvokerMap(Map.of());

@@ -1,7 +1,7 @@
 package com.ruayou.core;
 
-import com.ruayou.core.httpclient.HttpClientConfig;
-import com.ruayou.core.netty.NettyServerConfig;
+import com.ruayou.common.config.GlobalConfig;
+
 
 /**
  * @Author：ruayou
@@ -11,7 +11,7 @@ import com.ruayou.core.netty.NettyServerConfig;
  */
 public class RuayouGateway {
     public static void main(String[] args) {
-        ServerContainer container = new ServerContainer(new NettyServerConfig(), new HttpClientConfig());
+        ServerContainer container = new ServerContainer(new GlobalConfig());
         container.start();
     }
 }

@@ -5,11 +5,10 @@ import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.ruayou.common.api_interface.config_center.ConfigCenter;
 import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
+import com.ruayou.common.config.GlobalConfig;
+import com.ruayou.common.utils.YamlUtils;
 import lombok.extern.log4j.Log4j2;
-
-
 import java.util.concurrent.Executor;
-
 /**
  * @Author：ruayou
  * @Date：2024/1/29 22:37
@@ -17,22 +16,21 @@ import java.util.concurrent.Executor;
  */
 @Log4j2
 public class NacosConfigCenter implements ConfigCenter {
-    private  static NacosConfigCenter nacosConfigCenter;
     /**
      * 服务端地址
      */
     private String serverAddr;
-
     /**
      * 环境
      */
     private String env;
 
     private ConfigService configService;
+    private boolean isInit=false;
 
     @Override
     public void init(String serverAddr, String env) {
-        if(nacosConfigCenter!=null)return;
+        if (this.isInit)return;
         this.serverAddr = serverAddr;
         this.env = env;
         try {
@@ -40,25 +38,33 @@ public class NacosConfigCenter implements ConfigCenter {
         } catch (NacosException e) {
             throw new RuntimeException(e);
         }
-        nacosConfigCenter=this;
+        this.isInit=true;
     }
 
+    /**
+     * 根据dataId对配置中心的文件进行订阅
+     * @param dataId
+     * @param listener  配置变更监听器
+     */
     @Override
     public void subscribeConfigChange(String dataId, ConfigChangeListener listener) {
         try {
-            String configJson = configService.getConfig(dataId, env, 5000);
-            log.info("config from nacos: {}", configJson);
+            String configStr = configService.getConfig(dataId, env, 5000);
+            log.debug("config from nacos: {}", configStr);
+            GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
+            listener.onConfigChange(config);
             //监听变化
             configService.addListener(dataId, env, new Listener() {
-                //是否使用额外线程执行
                 @Override
                 public Executor getExecutor() {
                     return null;
                 }
-                //这里的用法我在那片线程池动态调参的时候写到过,有兴趣可以查看博客
                 @Override
                 public void receiveConfigInfo(String configInfo) {
+                    //配置发生动态变更
                     log.info("config from nacos: {}", configInfo);
+                    GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
+                    listener.onConfigChange(config);
                 }
             });
         } catch (NacosException e) {

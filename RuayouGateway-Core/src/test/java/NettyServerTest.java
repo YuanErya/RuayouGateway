@@ -1,5 +1,5 @@
 import com.ruayou.core.netty.NettyHttpServer;
-import com.ruayou.core.netty.NettyServerConfig;
+import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 
 /**

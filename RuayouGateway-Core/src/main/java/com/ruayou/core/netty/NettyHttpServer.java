@@ -1,6 +1,7 @@
 package com.ruayou.core.netty;
 
 import com.ruayou.core.LifeCycle;
+import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.handler.HttpServerHandler;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.bootstrap.ServerBootstrap;

@@ -1,6 +1,7 @@
 package com.ruayou.core.httpclient;
 
 import com.ruayou.core.LifeCycle;
+import com.ruayou.common.config.HttpClientConfig;
 import com.ruayou.core.helper.AsyncHttpHelper;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.EventLoopGroup;

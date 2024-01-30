@@ -1,5 +1,6 @@
-package com.ruayou.core.httpclient;
+package com.ruayou.common.config;
 
+import com.ruayou.common.api_interface.Config;
 import lombok.Data;
 
 /**
@@ -8,7 +9,7 @@ import lombok.Data;
  * @Filename：HttpClientConfig
  */
 @Data
-public class HttpClientConfig {
+public class HttpClientConfig implements Config {
     //	Http Async 参数选项：
     //	连接超时时间
     private int httpConnectTimeout = 30 * 1000;
