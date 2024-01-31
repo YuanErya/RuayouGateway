@@ -34,20 +34,15 @@ import java.util.Set;
 @Log4j2
 @Data
 public class ServerContainer implements LifeCycle{
-    private final GlobalConfig globalConfig;
-    private final HttpClientConfig httpClientConfig;
-    private final NettyServerConfig nettyServerConfig;
-    private final NacosConfig nacosConfig;
+    private static GlobalConfig globalConfig=GlobalConfig.getConfig();
+    private static HttpClientConfig httpClientConfig=globalConfig.getHttpClientConfig();
+    private static NettyServerConfig nettyServerConfig=globalConfig.getNettyServerConfig();
+    private static NacosConfig nacosConfig=globalConfig.getNacosConfig();
     private HttpProcessor processor;
     boolean initFlag=false;
 
     private static final  ArrayList<LifeCycle> run=new ArrayList<>();
-    public ServerContainer(GlobalConfig config) {
-        this.globalConfig = config;
-        this.httpClientConfig=config.getHttpClientConfig();
-        this.nettyServerConfig=config.getNettyServerConfig();
-        this.nacosConfig=config.getNacosConfig();
-    }
+
     @Override
     public void init() {
         if (initFlag) {
@@ -70,16 +65,35 @@ public class ServerContainer implements LifeCycle{
             init();
         }
         run.forEach(LifeCycle::start);
-        RegisterCenter registerCenter = registerAndSubscribe(nacosConfig,nettyServerConfig);
+        registerAndSubscribe(nacosConfig,nettyServerConfig);
         ConfigCenter configCenter=new NacosConfigCenter();
         configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(Config config) {
-                log.info("检测到配置更新：{}",config);
+                GlobalConfig origin=GlobalConfig.getConfig();
+                GlobalConfig gf=null;
+                if(config instanceof GlobalConfig) gf=(GlobalConfig)config;
+                if (gf!=null&&!origin.equals(gf)) {
+                    log.info("检测到核心组件配置更新：{}",config);
+                    GlobalConfig.saveConfig(gf);
+                    updateConfig(gf);
+                    //重启配置变更的组件
+                    if (!gf.getNettyServerConfig().equals(origin.getNettyServerConfig())) {
+                        run.forEach((component)->{
+                            if(component instanceof NettyHttpServer )component.restart();
+                        });
+                    }
+                    //重启配置变更的组件
+                    if (!gf.getHttpClientConfig().equals(origin.getHttpClientConfig())) {
+                        run.forEach((component)->{
+                            if(component instanceof AsyncHttpCoreClient )component.restart();
+                        });
+                    }
+                }
             }
         });
-        log.info("RuayouGateway网关启动成功，正在监听端口：{}", this.nettyServerConfig.getPort());
+        log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
 
     @Override
@@ -87,6 +101,12 @@ public class ServerContainer implements LifeCycle{
         run.forEach(LifeCycle::close);
         log.info("========RuayouGateway已停止运行！========");
     }
+
+    @Override
+    public void restart() {
+
+    }
+
     public static void addComponent(LifeCycle component){
         run.add(component);
     }
@@ -94,8 +114,6 @@ public class ServerContainer implements LifeCycle{
     public static List<LifeCycle> getComponents(){
         return run;
     }
-
-
 
     private static RegisterCenter registerAndSubscribe(NacosConfig config,NettyServerConfig nettyServerConfig) {
         final RegisterCenter registerCenter = new NacosRegisterCenter();
@@ -141,5 +159,12 @@ public class ServerContainer implements LifeCycle{
         serviceDefinition.setServiceId(applicationName);
         serviceDefinition.setEnvType(config.getEnv());
         return serviceDefinition;
+    }
+
+    public static void updateConfig(GlobalConfig config){
+        globalConfig = config;
+        httpClientConfig=config.getHttpClientConfig();
+        nettyServerConfig=config.getNettyServerConfig();
+        nacosConfig=config.getNacosConfig();
     }
 }

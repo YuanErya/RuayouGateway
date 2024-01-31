@@ -9,4 +9,6 @@ public interface LifeCycle {
     void init();
     void start();
     void close();
+
+    void restart();
 }

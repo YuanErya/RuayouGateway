@@ -1,3 +1,5 @@
+import com.ruayou.common.config.HttpClientConfig;
+import com.ruayou.common.config.NacosConfig;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
@@ -32,6 +34,10 @@ public class YamlTest {
         System.out.println(config);
     }
 
-
-
+    @Test
+    public void testConfig(){
+        GlobalConfig config = new GlobalConfig();
+        config.getNacosConfig().setEnv("prod");
+        System.out.println(GlobalConfig.getConfig().equals(config));
+    }
 }

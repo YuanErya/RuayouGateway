@@ -1,10 +1,12 @@
 package com.ruayou.core.netty;
 
+import com.ruayou.common.config.GlobalConfig;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.handler.HttpServerHandler;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -20,12 +22,11 @@ import lombok.extern.log4j.Log4j2;
 /**
  * @Author：ruayou
  * @Date：2024/1/26 20:26
- * @Filename：HttpServer
- * netty服务端,用于接收处理Http请求
+ * @Filename：HttpServer netty服务端, 用于接收处理Http请求
  */
 @Log4j2
 public class NettyHttpServer implements LifeCycle {
-    private final NettyServerConfig config;
+    private NettyServerConfig config;
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossEventLoopGroup;
 
@@ -34,11 +35,13 @@ public class NettyHttpServer implements LifeCycle {
     }
 
     private EventLoopGroup workerEventLoopGroup;
+
+    private Channel channel;
     private final HttpProcessor processor;
 
-    public NettyHttpServer(NettyServerConfig config,HttpProcessor processor) {
+    public NettyHttpServer(NettyServerConfig config, HttpProcessor processor) {
         this.config = config;
-        this.processor=processor;
+        this.processor = processor;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class NettyHttpServer implements LifeCycle {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)            // TCP连接的最大队列长度
                 .option(ChannelOption.SO_REUSEADDR, true)          // 允许端口重用
-                .option(ChannelOption.SO_KEEPALIVE, true)          // 保持连接检测
+                .childOption(ChannelOption.SO_KEEPALIVE, true)          // 保持连接检测
                 .childOption(ChannelOption.TCP_NODELAY, true)      // 禁用Nagle算法，适用于小数据即时传输
                 .childOption(ChannelOption.SO_SNDBUF, 65535)       // 设置发送缓冲区大小
                 .childOption(ChannelOption.SO_RCVBUF, 65535)       // 设置接收缓冲区大小
@@ -67,18 +70,30 @@ public class NettyHttpServer implements LifeCycle {
                     }
                 });
     }
+
     @Override
     public void start() {
         try {
-            this.bootstrap.bind().sync();
-            log.info("RuayouGateway-HttpServer启动成功，正在监听端口：{}", this.config.getPort());
+            this.channel = this.bootstrap.bind().sync().channel();
+            log.info("RuayouGateway-HttpServer启动成功，正在监听端口：{}", config.getPort());
         } catch (InterruptedException e) {
             throw new RuntimeException("启动服务器时发生异常", e);
         }
     }
+
     @Override
     public void close() {
-        if(bossEventLoopGroup!=null)bossEventLoopGroup.shutdownGracefully();
-        if(workerEventLoopGroup!=null)workerEventLoopGroup.shutdownGracefully();
+        if (bossEventLoopGroup != null) bossEventLoopGroup.shutdownGracefully();
+        if (workerEventLoopGroup != null) workerEventLoopGroup.shutdownGracefully();
+    }
+
+    @Override
+    public void restart() {
+        channel.close();
+        close();
+        //重新载入配置文件重新启动
+        this.config = GlobalConfig.getConfig().getNettyServerConfig();
+        init();
+        start();
     }
 }

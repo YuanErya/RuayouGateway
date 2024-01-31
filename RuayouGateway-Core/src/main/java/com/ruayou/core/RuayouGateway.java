@@ -11,7 +11,7 @@ import com.ruayou.common.config.GlobalConfig;
  */
 public class RuayouGateway {
     public static void main(String[] args) {
-        ServerContainer container = new ServerContainer(new GlobalConfig());
+        ServerContainer container = new ServerContainer();
         container.start();
     }
 }

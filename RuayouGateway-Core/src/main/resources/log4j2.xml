@@ -39,16 +39,15 @@
     </Appenders>
 
     <Loggers>
-
-        <Logger name="com.ruayou.core.*" level="INFO" includeLocation="true">
-            <AppenderRef ref="RandomAccessFile"/>
-        </Logger>
-        <Logger name="accessLog" level="INFO" includeLocation="false">
+        <Logger name="com.ruayou.core.filter.*" level="INFO" includeLocation="false">
             <AppenderRef ref="AccessLogFile"/>
+        </Logger>
+        <Logger name="com.ruayou.core" level="DEBUG" includeLocation="true">
+            <AppenderRef ref="RandomAccessFile"/>
         </Logger>
         <Root level="INFO">
             <Appender-Ref ref="CONSOLE"/>
-            <Appender-Ref ref="accessLog"/>
+            <Appender-Ref ref="AccessLogFile"/>
             <Appender-Ref ref="RandomAccessFile"/>
         </Root>
     </Loggers>

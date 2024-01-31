@@ -1,6 +1,5 @@
 package com.ruayou.core.netty.processor;
 
-import com.ruayou.core.LifeCycle;
 import com.ruayou.core.context.HttpRequestWrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -33,6 +32,11 @@ public class HttpServerCoreProcessor implements HttpProcessor{
 
     @Override
     public void close() {
+
+    }
+
+    @Override
+    public void restart() {
 
     }
 }

@@ -1,8 +1,12 @@
 package com.ruayou.core.httpclient;
 
+import com.ruayou.common.config.GlobalConfig;
+import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.common.config.HttpClientConfig;
+import com.ruayou.core.ServerContainer;
 import com.ruayou.core.helper.AsyncHttpHelper;
+import com.ruayou.core.netty.NettyHttpServer;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.EventLoopGroup;
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +25,8 @@ import java.io.IOException;
 @Log4j2
 public class AsyncHttpCoreClient implements LifeCycle {
     private AsyncHttpClient httpClient;
-    private final HttpClientConfig config;
-    private final EventLoopGroup worker;
+    private  HttpClientConfig config;
+    private  EventLoopGroup worker;
 
     public AsyncHttpCoreClient(HttpClientConfig config, EventLoopGroup worker) {
         this.worker = worker;
@@ -61,5 +65,18 @@ public class AsyncHttpCoreClient implements LifeCycle {
                 log.error("AsyncHttpCoreClient close error", e);
             }
         }
+    }
+
+    @Override
+    public void restart() {
+        close();
+        this.config= GlobalConfig.getConfig().getHttpClientConfig();
+        ServerContainer.getComponents().forEach((component)->{
+            if (component instanceof NettyHttpServer) {
+                this.worker=((NettyHttpServer) component).getWorkerEventLoopGroup();
+            }
+        });
+        init();
+        start();
     }
 }

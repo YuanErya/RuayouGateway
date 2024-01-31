@@ -62,8 +62,8 @@ public class NacosConfigCenter implements ConfigCenter {
                 @Override
                 public void receiveConfigInfo(String configInfo) {
                     //配置发生动态变更
-                    log.info("config from nacos: {}", configInfo);
-                    GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
+                    log.debug("config from nacos: {}", configInfo);
+                    GlobalConfig config = YamlUtils.parseYaml(configInfo, GlobalConfig.class);
                     listener.onConfigChange(config);
                 }
             });
