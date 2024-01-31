@@ -6,16 +6,14 @@ import com.ruayou.common.api_interface.config_center.ConfigCenter;
 import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.api_interface.register_center.RegisterCenterListener;
+import com.ruayou.common.config.*;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.utils.NetUtils;
+import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
-import com.ruayou.common.config.GlobalConfig;
-import com.ruayou.common.config.NacosConfig;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
-import com.ruayou.common.config.HttpClientConfig;
 import com.ruayou.core.netty.NettyHttpServer;
-import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 import com.ruayou.register_center.nacosimpl.NacosRegisterCenter;
@@ -70,12 +68,11 @@ public class ServerContainer implements LifeCycle{
         configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
             @Override
-            public void onConfigChange(Config config) {
+            public void onConfigChange(String configInfo) {
                 GlobalConfig origin=GlobalConfig.getConfig();
-                GlobalConfig gf=null;
-                if(config instanceof GlobalConfig) gf=(GlobalConfig)config;
+                GlobalConfig gf=YamlUtils.parseYaml(configInfo, GlobalConfig.class);
                 if (gf!=null&&!origin.equals(gf)) {
-                    log.info("检测到核心组件配置更新：{}",config);
+                    log.info("检测到核心组件配置更新：{}",gf);
                     GlobalConfig.saveConfig(gf);
                     updateConfig(gf);
                     //重启配置变更的组件
@@ -91,6 +88,15 @@ public class ServerContainer implements LifeCycle{
                         });
                     }
                 }
+            }
+        });
+        //订阅路由规则
+        configCenter.subscribeConfigChange(PatternPathConfig.dataId, new ConfigChangeListener() {
+            @Override
+            public void onConfigChange(String configInfo) {
+                PatternPathConfig patternPathConfig = YamlUtils.parseYaml(configInfo, PatternPathConfig.class);
+                PatternPathConfig.saveConfig(patternPathConfig);
+                log.info("检测到路由规则配置更新：{}",PatternPathConfig.getConfig());
             }
         });
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
@@ -127,14 +133,13 @@ public class ServerContainer implements LifeCycle{
         registerCenter.subscribeAllServices(new RegisterCenterListener() {
             @Override
             public void onChange(ServiceDefinition serviceDefinition, Set<ServiceInstance> serviceInstanceSet) {
-                log.info("refresh service and instance: {} {}", serviceDefinition.getUniqueId(),
-                        JSON.toJSON(serviceInstanceSet));
+                log.info("refresh service and instance: {} {}", serviceDefinition.getUniqueId(), serviceInstanceSet);
                 //要做的是把变更的新的获取到的新的实例的列表重新保存
-//                DynamicConfigManager manager = DynamicConfigManager.getInstance();
-//                //将这次变更事件影响之后的服务实例再次添加到对应的服务实例集合
-//                manager.addServiceInstance(serviceDefinition.getUniqueId(), serviceInstanceSet);
-//                //修改发生对应的服务定义
-//                manager.putServiceDefinition(serviceDefinition.getUniqueId(),serviceDefinition);
+                ServiceAndInstanceManager manager = ServiceAndInstanceManager.getManager();
+                //将这次变更事件影响之后的服务实例再次添加到对应的服务实例集合
+                manager.addServiceInstance(serviceDefinition.getUniqueId(), serviceInstanceSet);
+                //修改发生对应的服务定义
+                manager.putServiceDefinition(serviceDefinition.getUniqueId(),serviceDefinition);
             }
         });
         return registerCenter;
@@ -154,7 +159,6 @@ public class ServerContainer implements LifeCycle{
     private static ServiceDefinition buildGatewayServiceDefinition(NacosConfig config) {
         String applicationName = config.getApplicationName();
         ServiceDefinition serviceDefinition = new ServiceDefinition();
-        serviceDefinition.setInvokerMap(Map.of());
         serviceDefinition.setUniqueId(applicationName);
         serviceDefinition.setServiceId(applicationName);
         serviceDefinition.setEnvType(config.getEnv());

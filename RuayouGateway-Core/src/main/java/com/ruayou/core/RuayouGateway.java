@@ -1,7 +1,5 @@
 package com.ruayou.core;
 
-import com.ruayou.common.config.GlobalConfig;
-
 
 /**
  * @Author：ruayou

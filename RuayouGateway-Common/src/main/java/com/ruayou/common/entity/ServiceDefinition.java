@@ -1,6 +1,8 @@
 package com.ruayou.common.entity;
 
 import lombok.Builder;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +13,7 @@ import java.util.Objects;
 @Builder
 public class ServiceDefinition implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -8263365765897285189L;
 
 	/**
@@ -48,10 +51,6 @@ public class ServiceDefinition implements Serializable {
 	 */
 	private boolean enable = true;
 
-	/**
-	 * 	服务列表信息：
-	 */
-	private Map<String, ServiceInvoker> invokerMap;
 
 
 	public ServiceDefinition() {
@@ -59,7 +58,7 @@ public class ServiceDefinition implements Serializable {
 	}
 
 	public ServiceDefinition(String uniqueId, String serviceId, String version, String protocol, String patternPath,
-							 String envType, boolean enable, Map<String, ServiceInvoker> invokerMap) {
+							 String envType, boolean enable) {
 		super();
 		this.uniqueId = uniqueId;
 		this.serviceId = serviceId;
@@ -68,7 +67,6 @@ public class ServiceDefinition implements Serializable {
 		this.patternPath = patternPath;
 		this.envType = envType;
 		this.enable = enable;
-		this.invokerMap = invokerMap;
 	}
 
 	@Override
@@ -144,13 +142,7 @@ public class ServiceDefinition implements Serializable {
 		this.enable = enable;
 	}
 
-	public Map<String, ServiceInvoker> getInvokerMap() {
-		return invokerMap;
-	}
 
-	public void setInvokerMap(Map<String, ServiceInvoker> invokerMap) {
-		this.invokerMap = invokerMap;
-	}
 
 
 }

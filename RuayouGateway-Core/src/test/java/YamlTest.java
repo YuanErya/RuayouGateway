@@ -1,8 +1,11 @@
-import com.ruayou.common.config.HttpClientConfig;
-import com.ruayou.common.config.NacosConfig;
+
+import com.ruayou.common.config.PatternPathConfig;
+import com.ruayou.common.utils.PathUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 /**
  * @Author：ruayou
@@ -12,26 +15,11 @@ import org.junit.Test;
 public class YamlTest {
     @Test
     public void testYaml(){
-        String yaml = YamlUtils.toYaml(new GlobalConfig());
-        long l = System.currentTimeMillis();
-        GlobalConfig config = YamlUtils.parseYaml(
-                "httpClientConfig:\n" +
-                "  httpConnectTimeout: 30000\n" +
-                "  httpConnectionsPerHost: 8000\n" +
-                "  httpMaxConnections: 10000\n" +
-                "  httpMaxRequestRetry: 2\n" +
-                "  httpPooledConnectionIdleTimeout: 60000\n" +
-                "  httpRequestTimeout: 30000\n" +
-                "nacosConfig:\n" +
-                "  applicationName: ruayou-gateway\n" +
-                "  env: DEFAULT_GROUP\n" +
-                "  registryAddress: 127.0.0.1:8848\n" +
-                "nettyServerConfig:\n" +
-                "  eventLoopGroupWorkerNum: 1\n" +
-                "  maxContentLength: 67108864\n" +
-                "  port: 8999", GlobalConfig.class);
-        System.out.println(System.currentTimeMillis()-l);
-        System.out.println(config);
+        HashMap<String, String> pattern = PatternPathConfig.getConfig().getPattern();
+        pattern.put("/user/*","user");
+        pattern.put("/user2/*","user2");
+        pattern.put("/use3r/*","user3");
+        System.out.println(YamlUtils.toYaml(PatternPathConfig.getConfig()));
     }
 
     @Test
@@ -40,4 +28,11 @@ public class YamlTest {
         config.getNacosConfig().setEnv("prod");
         System.out.println(GlobalConfig.getConfig().equals(config));
     }
+    @Test
+    public void testPathMatch(){
+        String p = "/users/*";
+        String str = "/users/ers/ser";
+        System.out.println(PathUtils.isMatch(str, p));
+    }
+
 }

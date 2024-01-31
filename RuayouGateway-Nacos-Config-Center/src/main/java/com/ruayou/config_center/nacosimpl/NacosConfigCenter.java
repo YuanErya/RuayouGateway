@@ -51,8 +51,8 @@ public class NacosConfigCenter implements ConfigCenter {
         try {
             String configStr = configService.getConfig(dataId, env, 5000);
             log.debug("config from nacos: {}", configStr);
-            GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
-            listener.onConfigChange(config);
+            //GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
+            listener.onConfigChange(configStr);
             //监听变化
             configService.addListener(dataId, env, new Listener() {
                 @Override
@@ -63,8 +63,8 @@ public class NacosConfigCenter implements ConfigCenter {
                 public void receiveConfigInfo(String configInfo) {
                     //配置发生动态变更
                     log.debug("config from nacos: {}", configInfo);
-                    GlobalConfig config = YamlUtils.parseYaml(configInfo, GlobalConfig.class);
-                    listener.onConfigChange(config);
+                    //GlobalConfig config = YamlUtils.parseYaml(configInfo, GlobalConfig.class);
+                    listener.onConfigChange(configInfo);
                 }
             });
         } catch (NacosException e) {

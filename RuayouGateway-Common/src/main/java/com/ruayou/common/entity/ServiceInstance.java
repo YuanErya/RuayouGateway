@@ -2,7 +2,7 @@ package com.ruayou.common.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public class ServiceInstance implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = -7559569289189228478L;
 
 	/**
@@ -151,7 +152,7 @@ public class ServiceInstance implements Serializable {
 		if(this == o) {
 			return true;
 		}
-		if(this == null || getClass() != o.getClass()) {
+		if(getClass() != o.getClass()) {
 			return false;
 		}
 		ServiceInstance serviceInstance = (ServiceInstance)o;

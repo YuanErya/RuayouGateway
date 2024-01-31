@@ -49,6 +49,8 @@ public class NacosRegisterCenter implements RegisterCenter {
      */
     private String env;
 
+    private EventListener eventListener = new NacosRegisterListener();
+
     /**
      * 主要用于维护服务实例信息
      */
@@ -142,13 +144,10 @@ public class NacosRegisterCenter implements RegisterCenter {
                     if (subscribeServiceSet.contains(service)) {
                         continue;
                     }
-                    //nacos事件监听器 订阅当前服务
-                    //这里我们需要自己实现一个nacos的事件订阅类 来具体执行订阅执行时的操作
-                    EventListener eventListener = new NacosRegisterListener();
                     //当前服务之前不存在 调用监听器方法进行添加处理
-                    eventListener.onEvent(new NamingEvent(service, null));
+                    this.eventListener.onEvent(new NamingEvent(service, null));
                     //为指定的服务和环境注册一个事件监听器
-                    namingService.subscribe(service, env, eventListener);
+                    namingService.subscribe(service, env, this.eventListener);
                     log.info("subscribe a service ，ServiceName: {} Env: {}", service, env);
                 }
                 //遍历下一页的服务列表
