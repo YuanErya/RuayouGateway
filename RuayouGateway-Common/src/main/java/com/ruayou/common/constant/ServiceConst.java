@@ -1,6 +1,6 @@
 package com.ruayou.common.constant;
 
-public interface GatewayConst {
+public interface ServiceConst {
 
 	String UNIQUE_ID = "uniqueId";
 
@@ -10,7 +10,7 @@ public interface GatewayConst {
 
 	int DEFAULT_WEIGHT = 100;
 
-	String META_DATA_KEY = "meta";
+	String META_DATA_KEY = "bean";
 
 	String BUFFER_TYPE_PARALLEL ="parallel" ;
 }

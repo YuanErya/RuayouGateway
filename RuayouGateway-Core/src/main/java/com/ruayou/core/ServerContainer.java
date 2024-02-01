@@ -1,7 +1,5 @@
 package com.ruayou.core;
 
-import com.alibaba.fastjson2.JSON;
-import com.ruayou.common.api_interface.Config;
 import com.ruayou.common.api_interface.config_center.ConfigCenter;
 import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
@@ -21,7 +19,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -110,7 +107,6 @@ public class ServerContainer implements LifeCycle{
 
     @Override
     public void restart() {
-
     }
 
     public static void addComponent(LifeCycle component){
@@ -121,12 +117,12 @@ public class ServerContainer implements LifeCycle{
         return run;
     }
 
-    private static RegisterCenter registerAndSubscribe(NacosConfig config,NettyServerConfig nettyServerConfig) {
+    private static RegisterCenter registerAndSubscribe(NacosConfig nacosConfig,NettyServerConfig nettyServerConfig) {
         final RegisterCenter registerCenter = new NacosRegisterCenter();
-        registerCenter.init(config.getRegistryAddress(), config.getEnv());
+        registerCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         //构造网关服务定义和服务实例
-        ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(config);
-        ServiceInstance serviceInstance = buildGatewayServiceInstance(nettyServerConfig);
+        ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(nacosConfig);
+        ServiceInstance serviceInstance = buildGatewayServiceInstance(nettyServerConfig,nacosConfig);
         //注册
         registerCenter.register(serviceDefinition, serviceInstance);
         //订阅
@@ -145,7 +141,7 @@ public class ServerContainer implements LifeCycle{
         return registerCenter;
     }
 
-    private static ServiceInstance buildGatewayServiceInstance(NettyServerConfig nettyServerConfig) {
+    private static ServiceInstance buildGatewayServiceInstance(NettyServerConfig nettyServerConfig,NacosConfig config) {
         String localIp = NetUtils.getLocalIp();
         int port = nettyServerConfig.getPort();
         ServiceInstance serviceInstance = new ServiceInstance();
@@ -153,6 +149,7 @@ public class ServerContainer implements LifeCycle{
         serviceInstance.setIp(localIp);
         serviceInstance.setPort(port);
         serviceInstance.setRegisterTime(System.currentTimeMillis());
+        serviceInstance.setUniqueId(config.getApplicationName());
         return serviceInstance;
     }
 
@@ -161,7 +158,7 @@ public class ServerContainer implements LifeCycle{
         ServiceDefinition serviceDefinition = new ServiceDefinition();
         serviceDefinition.setUniqueId(applicationName);
         serviceDefinition.setServiceId(applicationName);
-        serviceDefinition.setEnvType(config.getEnv());
+        serviceDefinition.setGroup(config.getEnv());
         return serviceDefinition;
     }
 

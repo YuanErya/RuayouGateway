@@ -16,11 +16,10 @@ import com.alibaba.nacos.common.executor.NameThreadFactory;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.api_interface.register_center.RegisterCenterListener;
-import com.ruayou.common.constant.GatewayConst;
+import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import lombok.extern.log4j.Log4j2;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class NacosRegisterCenter implements RegisterCenter {
     /**
      * 环境选择
      */
-    private String env;
+    private String group;
 
     private EventListener eventListener = new NacosRegisterListener();
 
@@ -64,9 +63,9 @@ public class NacosRegisterCenter implements RegisterCenter {
     private final List<RegisterCenterListener> registerCenterListenerList = new CopyOnWriteArrayList<>();
 
     @Override
-    public void init(String registerAddress, String env) {
+    public void init(String registerAddress, String group) {
         this.registerAddress = registerAddress;
-        this.env = env;
+        this.group = group;
         try {
             this.namingMaintainService = NamingMaintainFactory.createMaintainService(registerAddress);
             this.namingService = NamingFactory.createNamingService(registerAddress);
@@ -78,21 +77,11 @@ public class NacosRegisterCenter implements RegisterCenter {
     @Override
     public void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) {
         try {
-            //构造nacos实例信息
-            Instance nacosInstance = new Instance();
-            nacosInstance.setInstanceId(serviceInstance.getServiceInstanceId());
-            nacosInstance.setPort(serviceInstance.getPort());
-            nacosInstance.setIp(serviceInstance.getIp());
-            //实例信息可以放入到metadata中
-            nacosInstance.setMetadata(Map.of(GatewayConst.META_DATA_KEY, JSON.toJSONString(serviceInstance)));
-
             //注册
-            namingService.registerInstance(serviceDefinition.getServiceId(), env, nacosInstance);
-
+            namingService.registerInstance(serviceDefinition.getServiceId(), group, changeInstance2Nacos(serviceInstance));
             //更新服务定义
-            namingMaintainService.updateService(serviceDefinition.getServiceId(), env, 0,
-                    Map.of(GatewayConst.META_DATA_KEY, JSON.toJSONString(serviceDefinition)));
-
+            namingMaintainService.updateService(serviceDefinition.getServiceId(), group, 0,
+                    Map.of(ServiceConst.META_DATA_KEY, JSON.toJSONString(serviceDefinition)));
             log.info("register {} {}", serviceDefinition, serviceInstance);
         } catch (NacosException e) {
             log.error(e.getMessage());
@@ -103,7 +92,7 @@ public class NacosRegisterCenter implements RegisterCenter {
     public void deregister(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) {
         try {
             //进行服务注销
-            namingService.deregisterInstance(serviceDefinition.getServiceId(), env, serviceInstance.getIp(),
+            namingService.deregisterInstance(serviceDefinition.getServiceId(), group, serviceInstance.getIp(),
                     serviceInstance.getPort());
         } catch (NacosException e) {
             throw new RuntimeException(e);
@@ -135,7 +124,7 @@ public class NacosRegisterCenter implements RegisterCenter {
             int pageNo = 1;
             int pageSize = 100;
             //分页从nacos拿到所有的服务列表
-            List<String> serviseList = namingService.getServicesOfServer(pageNo, pageSize, env).getData();
+            List<String> serviseList = namingService.getServicesOfServer(pageNo, pageSize, group).getData();
             //拿到所有的服务名称后进行遍历
             while (CollectionUtils.isNotEmpty(serviseList)) {
                 log.debug("service list size {}", serviseList.size());
@@ -147,15 +136,27 @@ public class NacosRegisterCenter implements RegisterCenter {
                     //当前服务之前不存在 调用监听器方法进行添加处理
                     this.eventListener.onEvent(new NamingEvent(service, null));
                     //为指定的服务和环境注册一个事件监听器
-                    namingService.subscribe(service, env, this.eventListener);
-                    log.info("subscribe a service ，ServiceName: {} Env: {}", service, env);
+                    namingService.subscribe(service, group, this.eventListener);
+                    log.info("subscribe a service ，ServiceName: {} Env: {}", service, group);
                 }
                 //遍历下一页的服务列表
-                serviseList = namingService.getServicesOfServer(++pageNo, pageSize, env).getData();
+                serviseList = namingService.getServicesOfServer(++pageNo, pageSize, group).getData();
             }
         } catch (NacosException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Instance changeInstance2Nacos(ServiceInstance instance){
+        //构造nacos实例信息
+        Instance nacosInstance = new Instance();
+        nacosInstance.setInstanceId(instance.getServiceInstanceId());
+        nacosInstance.setPort(instance.getPort());
+        nacosInstance.setIp(instance.getIp());
+        nacosInstance.setWeight(instance.getWeight());
+        //实例信息可以放入到metadata中
+        nacosInstance.setMetadata(Map.of(ServiceConst.META_DATA_KEY, JSON.toJSONString(instance)));
+        return nacosInstance;
     }
 
 
@@ -170,18 +171,18 @@ public class NacosRegisterCenter implements RegisterCenter {
                 String serviceName = namingEvent.getServiceName();
                 try {
                     //获取服务定义信息
-                    Service service = namingMaintainService.queryService(serviceName, env);
+                    Service service = namingMaintainService.queryService(serviceName, group);
                     //得到服务定义信息
                     ServiceDefinition serviceDefinition =
-                            JSON.parseObject(service.getMetadata().get(GatewayConst.META_DATA_KEY),
+                            JSON.parseObject(service.getMetadata().get(ServiceConst.META_DATA_KEY),
                                     ServiceDefinition.class);
                     //获取服务实例信息
-                    List<Instance> allInstances = namingService.getAllInstances(service.getName(), env);
+                    List<Instance> allInstances = namingService.getAllInstances(service.getName(), group);
                     Set<ServiceInstance> set = new HashSet<>();
 
                     for (Instance instance : allInstances) {
                         ServiceInstance serviceInstance =
-                                JSON.parseObject(instance.getMetadata().get(GatewayConst.META_DATA_KEY),
+                                JSON.parseObject(instance.getMetadata().get(ServiceConst.META_DATA_KEY),
                                         ServiceInstance.class);
                         set.add(serviceInstance);
                     }

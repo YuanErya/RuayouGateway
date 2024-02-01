@@ -2,7 +2,6 @@ package com.ruayou.common.config;
 
 import com.ruayou.common.api_interface.Config;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * @Author：ruayou
