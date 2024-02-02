@@ -45,4 +45,13 @@ public interface IContext {
      *获取当前状态
      */
     int getStatus();
+
+    /**
+     * 判断网关状态运行状态
+     * @return
+     */
+    boolean isRunning();
+    boolean isWritten();
+    boolean isCompleted();
+    boolean isTerminated();
 }

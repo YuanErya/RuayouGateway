@@ -2,6 +2,7 @@ package com.ruayou.core.context;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,5 +84,69 @@ public class Context implements IContext {
     @Override
     public int getStatus() {
         return this.status;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return status == IContext.RUNNING;
+    }
+
+    @Override
+    public boolean isWritten() {
+        return  status == IContext.WRITTEN;
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return status == IContext.COMPLETED;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return status == IContext.TERMINATED;
+    }
+
+
+
+    public Throwable getThrowable() {
+        return this.throwable;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
+    }
+
+    public void setAttribute(String key,Object obj) {
+        attributes.put(key,obj);
+    }
+    public Object getAttribute(String key) {
+        return attributes.get(key);
+    }
+
+
+    public ChannelHandlerContext getNettyCtx() {
+        return this.nettyCtx;
+    }
+
+
+    public boolean isKeepAlive() {
+        return this.keepAlive;
+    }
+
+    public void releaseRequest() {
+        this.requestReleased.compareAndSet(false,true);
+    }
+
+    public void setCompletedCallBack(Consumer<IContext> consumer) {
+        if(completedCallbacks == null){
+            completedCallbacks = new ArrayList<>();
+        }
+        completedCallbacks.add(consumer);
+    }
+
+    public void invokeCompletedCallBack() {
+        if(completedCallbacks == null){
+            completedCallbacks.forEach(call->call.accept(this));
+        }
     }
 }

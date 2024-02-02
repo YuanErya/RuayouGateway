@@ -5,6 +5,7 @@ import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.api_interface.register_center.RegisterCenterListener;
 import com.ruayou.common.config.*;
+import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.utils.NetUtils;
@@ -148,6 +149,7 @@ public class ServerContainer implements LifeCycle{
         serviceInstance.setServiceInstanceId(localIp + ":" + port);
         serviceInstance.setIp(localIp);
         serviceInstance.setPort(port);
+        serviceInstance.setWeight(ServiceConst.DEFAULT_WEIGHT);
         serviceInstance.setRegisterTime(System.currentTimeMillis());
         serviceInstance.setUniqueId(config.getApplicationName());
         return serviceInstance;

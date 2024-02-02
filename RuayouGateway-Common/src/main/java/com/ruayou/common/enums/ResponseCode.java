@@ -32,8 +32,15 @@ public enum ResponseCode {
     VERIFICATION_FAILED(HttpResponseStatus.BAD_REQUEST,10030, "请求参数校验失败"),
     BLACKLIST(HttpResponseStatus.FORBIDDEN,10004, "请求IP在黑名单"),
     WHITELIST(HttpResponseStatus.FORBIDDEN,10005, "请求IP不在白名单")
-
     ;
+
+    public static final String CODE = "code";
+
+    public static final String STATUS = "status";
+
+    public static final String DATA = "data";
+
+    public static final String MESSAGE = "message";
 
     private HttpResponseStatus status;
     private int code;
