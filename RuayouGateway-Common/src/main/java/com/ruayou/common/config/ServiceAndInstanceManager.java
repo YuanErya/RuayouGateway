@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @Filename：ServiceAndInstanceManager
  */
 public class ServiceAndInstanceManager {
-    private static ServiceAndInstanceManager INSTANCE=new ServiceAndInstanceManager();
+    private static final ServiceAndInstanceManager INSTANCE=new ServiceAndInstanceManager();
     //	服务的定义集合：uniqueId代表服务的唯一标识
     private ConcurrentHashMap<String /* uniqueId */ , ServiceDefinition> serviceDefinitionMap = new ConcurrentHashMap<>();
 

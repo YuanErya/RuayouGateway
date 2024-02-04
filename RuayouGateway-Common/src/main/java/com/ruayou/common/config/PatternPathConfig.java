@@ -23,5 +23,4 @@ public class PatternPathConfig {
     public Set<String> getPatternSet(){
         return pattern.keySet();
     }
-
 }
