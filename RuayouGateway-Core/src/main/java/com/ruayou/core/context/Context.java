@@ -54,7 +54,6 @@ public class Context implements IContext {
      */
     protected List<Consumer<IContext>> completedCallbacks;
 
-
     public Context(String protocol, ChannelHandlerContext nettyCtx, boolean keepAlive) {
         this.protocol = protocol;
         this.nettyCtx = nettyCtx;

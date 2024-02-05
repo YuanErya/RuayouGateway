@@ -15,6 +15,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <caffeine.version>3.1.5</caffeine.version>
     </properties>
     <dependencies>
         <dependency>
@@ -34,6 +35,12 @@
             <artifactId>RuayouGateway-Nacos-Config-Center</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
         </dependency>
     </dependencies>
 
