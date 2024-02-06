@@ -24,7 +24,7 @@ public class GatewayContext extends Context{
 
     private boolean gray;
 
-    private int currentRetryTimes;
+    private int currentRetryCount;
 
     private FilterRule filterRule;
 
@@ -60,12 +60,12 @@ public class GatewayContext extends Context{
         this.gray = gray;
     }
 
-    public int getCurrentRetryTimes() {
-        return currentRetryTimes;
+    public int getCurrentRetryCount() {
+        return currentRetryCount;
     }
 
-    public void setCurrentRetryTimes(int currentRetryTimes) {
-        this.currentRetryTimes = currentRetryTimes;
+    public void setCurrentRetryCount(int currentRetryCount) {
+        this.currentRetryCount = currentRetryCount;
     }
 
     public FilterRule getFilterRule() {
@@ -77,9 +77,10 @@ public class GatewayContext extends Context{
     }
 
     public GatewayContext(String protocol, ChannelHandlerContext nettyCtx, boolean keepAlive,
-                          GatewayRequest request,  int currentRetryTimes) {
+                          GatewayRequest request, FilterRule filterRule, int currentRetryCount) {
         super(protocol, nettyCtx, keepAlive);
         this.request = request;
-        this.currentRetryTimes = currentRetryTimes;
+        this.currentRetryCount = currentRetryCount;
+        this.filterRule=filterRule;
     }
 }

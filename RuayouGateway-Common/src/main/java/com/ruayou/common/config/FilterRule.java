@@ -66,7 +66,7 @@ public class FilterRule {
 //    }
     @Data
     public static class RetryConfig {
-        private int times;
+        private int retryCount;
     }
 
 //    @Data

@@ -1,5 +1,9 @@
 package com.ruayou.core.context;
 
+import io.netty.channel.ChannelHandlerContext;
+
+import java.util.function.Consumer;
+
 /**
  * @Author：ruayou
  * @Date：2024/1/26 20:24
@@ -54,4 +58,40 @@ public interface IContext {
     boolean isWritten();
     boolean isCompleted();
     boolean isTerminated();
+
+
+    /**
+     * 获取请求结果
+     * @return
+     */
+    Object getResponse();
+
+    /**
+     * 获取Netty上下文
+     *
+     * @return
+     */
+    ChannelHandlerContext getNettyCtx();
+
+
+    /**
+     * 是否保持连接
+     * @return
+     */
+    boolean isKeepAlive();
+    /**
+     * 释放资源
+     */
+    void releaseRequest();
+
+    /**
+     * 设置回调函数
+     * @param consumer
+     */
+    void setCompletedCallBack(Consumer<IContext> consumer);
+
+    /**
+     * 设置回调函数
+     */
+    void invokeCompletedCallBack();
 }

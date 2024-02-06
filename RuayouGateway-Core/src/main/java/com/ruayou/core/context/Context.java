@@ -105,6 +105,10 @@ public class Context implements IContext {
         return status == IContext.TERMINATED;
     }
 
+    @Override
+    public Object getResponse() {
+        return null;
+    }
 
 
     public Throwable getThrowable() {
