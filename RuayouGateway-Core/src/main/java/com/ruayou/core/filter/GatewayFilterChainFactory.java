@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import static com.ruayou.common.constant.FilterConst.LOAD_BALANCE_FILTER_ID;
+
 /**
  * @Author：ruayou
  * @Date：2024/2/2 22:12
@@ -66,21 +68,22 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
     private GatewayFilterChain doBuildFilterChain(FilterRule rule){
         GatewayFilterChain chain = new GatewayFilterChain();
         List<Filter> filters = new ArrayList<>();
-        //获取过滤器配置规则  是我们再配置中心进行配置的
-        //这是由于我们的过滤器链是由我们的规则定义的
-        if (rule != null) {
-            //获取所有的过滤器
-            List<String> filterIds = rule.getFilters();
-            for (String filterId : filterIds) {
-                if (filterId == null) {
-                    continue;
-                }
-                if (StringUtils.isNotEmpty(filterId)) {
-                    Filter filter = getFilterInfo(filterId);
-                    if (filter != null) filters.add(filter);
-                }
-            }
-        }
+//        //获取过滤器配置规则  是我们再配置中心进行配置的
+//        //这是由于我们的过滤器链是由我们的规则定义的
+//        if (rule != null) {
+//            //获取所有的过滤器
+//            List<String> filterIds = rule.getFilters();
+//            for (String filterId : filterIds) {
+//                if (filterId == null) {
+//                    continue;
+//                }
+//                if (StringUtils.isNotEmpty(filterId)) {
+//                    Filter filter = getFilterInfo(filterId);
+//                    if (filter != null) filters.add(filter);
+//                }
+//            }
+//        }
+        filters.add(getFilterInfo(LOAD_BALANCE_FILTER_ID));
         //添加路由过滤器-因为我们的网关最后要执行的就是路由转发
         filters.add(new RouterFilter());
         //排序

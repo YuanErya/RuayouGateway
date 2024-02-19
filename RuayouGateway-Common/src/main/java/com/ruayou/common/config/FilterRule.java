@@ -1,7 +1,10 @@
 package com.ruayou.common.config;
 
 import lombok.Data;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：ruayou
@@ -29,7 +32,7 @@ public class FilterRule {
     /**
      * 路径匹配模式
      */
-    private List<String> paths;
+    private Map<String,String> patterns =new HashMap<>();
 
     /**
      * 优先级

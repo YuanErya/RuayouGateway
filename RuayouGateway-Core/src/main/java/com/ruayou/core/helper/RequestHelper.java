@@ -5,6 +5,7 @@ import com.ruayou.common.config.ServiceAndInstanceManager;
 import com.ruayou.common.constant.CommonConst;
 import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
+import com.ruayou.common.utils.PathUtils;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.request.GatewayRequest;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：ruayou
@@ -30,6 +32,14 @@ public class RequestHelper {
                 ServiceAndInstanceManager.getManager().getServiceDefinition(gateWayRequest.getUniqueId());
 
         FilterRule filterRule=null;
+        if (gateWayRequest.getUniqueId()==null) {
+            Map<String, String> patterns = filterRule.getPatterns();
+            patterns.keySet().forEach((pattern)->{
+                if (PathUtils.isMatch(gateWayRequest.getPath(),pattern)) {
+                    gateWayRequest.setUniqueId(patterns.get(pattern));
+                }
+            });
+        }//因该在构建请求的时候设置，后期改进。
         return new GatewayContext(serviceDefinition.getProtocol(), ctx,
                 HttpUtil.isKeepAlive(request), gateWayRequest, filterRule, 0);
     }
@@ -37,10 +47,9 @@ public class RequestHelper {
     private static GatewayRequest buildGatewayRequest(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) {
         HttpHeaders headers = fullHttpRequest.headers();
         String uniqueId = headers.get(ServiceConst.UNIQUE_ID);//待定
-
+        String uri = fullHttpRequest.uri();
         String host = headers.get(HttpHeaderNames.HOST);
         HttpMethod method = fullHttpRequest.method();
-        String uri = fullHttpRequest.uri();
         String clientIp = getClientIp(ctx, fullHttpRequest);
         String contentType = HttpUtil.getMimeType(fullHttpRequest) == null ? null :
                 HttpUtil.getMimeType(fullHttpRequest).toString();

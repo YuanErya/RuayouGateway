@@ -26,7 +26,8 @@ public class GatewayRequest implements IGatewayRequest{
      * 服务ID
      */
     @Getter
-    private final String uniqueId;
+    @Setter
+    private  String uniqueId;
 
     /**
      * 请求进入网关时间

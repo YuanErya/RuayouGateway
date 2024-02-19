@@ -1,11 +1,14 @@
 
+import com.ruayou.common.config.FilterRule;
 import com.ruayou.common.config.PatternPathConfig;
 import com.ruayou.common.utils.PathUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Author：ruayou
@@ -33,6 +36,28 @@ public class YamlTest {
         String p = "/users/*";
         String str = "/users/ers/ser";
         System.out.println(PathUtils.isMatch(str, p));
+    }
+
+
+    @Test
+    public void testFilterRule(){
+        FilterRule filterRule = new FilterRule();
+        filterRule.setRuleId("1");
+        ArrayList<String> filters = new ArrayList<>();
+        filters.add("heys");
+        filters.add("sad");
+        filterRule.setFilters(filters);
+        filterRule.setOrder(1);
+        filterRule.setProtocol("http");
+        Map<String,String> map=new HashMap<>();
+        map.put("/user/*","user-service");
+        map.put("/ping/*","ping-service");
+        filterRule.setPatterns(map);
+        FilterRule.RetryConfig retryConfig = new FilterRule.RetryConfig();
+        retryConfig.setRetryCount(3);
+        filterRule.setRetryConfig(retryConfig);
+        filterRule.setServiceId("user-service");
+        System.out.println(YamlUtils.toYaml(filterRule));
     }
 
 }
