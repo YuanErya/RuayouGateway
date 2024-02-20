@@ -28,8 +28,6 @@ public class RequestHelper {
 
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);
-        ServiceDefinition serviceDefinition =
-                ServiceAndInstanceManager.getManager().getServiceDefinition(gateWayRequest.getUniqueId());
 
         FilterRule filterRule=null;
         if (gateWayRequest.getUniqueId()==null) {
@@ -40,6 +38,8 @@ public class RequestHelper {
                 }
             });
         }//因该在构建请求的时候设置，后期改进。
+        ServiceDefinition serviceDefinition =
+                ServiceAndInstanceManager.getManager().getServiceDefinition(gateWayRequest.getUniqueId());
         return new GatewayContext(serviceDefinition.getProtocol(), ctx,
                 HttpUtil.isKeepAlive(request), gateWayRequest, filterRule, 0);
     }

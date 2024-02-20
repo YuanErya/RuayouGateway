@@ -5,6 +5,7 @@ import com.ruayou.core.context.response.GatewayResponse;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import com.ruayou.core.helper.AsyncHttpHelper;
+import com.ruayou.core.helper.ResponseHelper;
 import lombok.extern.log4j.Log4j2;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.Response;
@@ -40,9 +41,11 @@ public class RouterFilter implements Filter {
     private void complete(GatewayContext ctx, Request request,Response response, Throwable throwable) {
         ctx.releaseRequest();
         int currentRetryCount = ctx.getCurrentRetryCount();
-        int retryCount = ctx.getFilterRule().getRetryConfig().getRetryCount();
-        if ((throwable instanceof TimeoutException || throwable instanceof IOException) &&
-                currentRetryCount <= retryCount) {//&& !hystrixConfig.isPresent()
+
+        //由于没有配置文件为设计完善。
+        int retryCount =3; //ctx.getFilterRule().getRetryConfig().getRetryCount();
+        if ((throwable instanceof TimeoutException || throwable instanceof IOException) && currentRetryCount <= retryCount)
+        {//&& !hystrixConfig.isPresent()
             //请求重试
             doRetry(ctx, currentRetryCount);
             return;
@@ -63,7 +66,7 @@ public class RouterFilter implements Filter {
             log.error("complete error", e);
         } finally {
             ctx.written();//设置状态
-
+            ResponseHelper.writeResponse(ctx);
             log.info("{} {} {} {} {} {} {}",
                     System.currentTimeMillis() - ctx.getRequest().getBeginTime(),
                     ctx.getRequest().getClientIp(),

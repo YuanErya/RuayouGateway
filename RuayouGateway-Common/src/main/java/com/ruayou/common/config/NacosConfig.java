@@ -12,5 +12,5 @@ import lombok.Data;
 public class NacosConfig implements Config {
     private String applicationName = "ruayou-gateway";
     private String registryAddress = "127.0.0.1:8848";
-    private String env = "DEFAULT_GROUP";
+    private String env = "dev";
 }

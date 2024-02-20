@@ -10,7 +10,7 @@ public interface ServiceConst {
 
 	int DEFAULT_WEIGHT = 100;
 
-	String META_DATA_KEY = "bean";
+	String DATA_KEY = "meta";
 
 	String BUFFER_TYPE_PARALLEL ="parallel" ;
 }

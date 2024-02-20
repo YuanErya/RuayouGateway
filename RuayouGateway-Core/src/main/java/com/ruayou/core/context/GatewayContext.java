@@ -80,6 +80,7 @@ public class GatewayContext extends Context{
                           GatewayRequest request, FilterRule filterRule, int currentRetryCount) {
         super(protocol, nettyCtx, keepAlive);
         this.request = request;
+        this.uniqueId=request.getUniqueId();
         this.currentRetryCount = currentRetryCount;
         this.filterRule=filterRule;
     }

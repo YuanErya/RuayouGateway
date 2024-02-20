@@ -56,7 +56,9 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
     //对规则建立缓存，过滤器链条的复用。
     @Override
     public GatewayFilterChain buildFilterChain(GatewayContext ctx){
-        return chainCache.get(ctx.getFilterRule().getRuleId(),k->doBuildFilterChain(ctx.getFilterRule()));
+        return doBuildFilterChain(ctx.getFilterRule());
+        //测试功能临时取消缓存。。后期设计
+        //return chainCache.get(ctx.getFilterRule().getRuleId(),k->);
     }
 
     @Override

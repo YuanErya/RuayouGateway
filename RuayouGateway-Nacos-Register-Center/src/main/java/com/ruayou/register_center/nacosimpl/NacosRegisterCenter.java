@@ -81,7 +81,7 @@ public class NacosRegisterCenter implements RegisterCenter {
             namingService.registerInstance(serviceDefinition.getServiceId(), group, changeInstance2Nacos(serviceInstance));
             //更新服务定义
             namingMaintainService.updateService(serviceDefinition.getServiceId(), group, 0,
-                    Map.of(ServiceConst.META_DATA_KEY, JSON.toJSONString(serviceDefinition)));
+                    Map.of(ServiceConst.DATA_KEY, JSON.toJSONString(serviceDefinition)));
             log.info("register {} {}", serviceDefinition, serviceInstance);
         } catch (NacosException e) {
             log.error(e.getMessage());
@@ -155,7 +155,7 @@ public class NacosRegisterCenter implements RegisterCenter {
         nacosInstance.setIp(instance.getIp());
         nacosInstance.setWeight(instance.getWeight());
         //实例信息可以放入到metadata中
-        nacosInstance.setMetadata(Map.of(ServiceConst.META_DATA_KEY, JSON.toJSONString(instance)));
+        nacosInstance.setMetadata(Map.of(ServiceConst.DATA_KEY, JSON.toJSONString(instance)));
         return nacosInstance;
     }
 
@@ -174,7 +174,7 @@ public class NacosRegisterCenter implements RegisterCenter {
                     Service service = namingMaintainService.queryService(serviceName, group);
                     //得到服务定义信息
                     ServiceDefinition serviceDefinition =
-                            JSON.parseObject(service.getMetadata().get(ServiceConst.META_DATA_KEY),
+                            JSON.parseObject(service.getMetadata().get(ServiceConst.DATA_KEY),
                                     ServiceDefinition.class);
                     //获取服务实例信息
                     List<Instance> allInstances = namingService.getAllInstances(service.getName(), group);
@@ -182,7 +182,7 @@ public class NacosRegisterCenter implements RegisterCenter {
 
                     for (Instance instance : allInstances) {
                         ServiceInstance serviceInstance =
-                                JSON.parseObject(instance.getMetadata().get(ServiceConst.META_DATA_KEY),
+                                JSON.parseObject(instance.getMetadata().get(ServiceConst.DATA_KEY),
                                         ServiceInstance.class);
                         set.add(serviceInstance);
                     }
