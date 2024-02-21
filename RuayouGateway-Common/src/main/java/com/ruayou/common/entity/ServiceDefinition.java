@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 资源服务定义类：无论下游是什么样的服务都需要进行注册
+ *
  */
 @Builder
 @Data
@@ -38,7 +38,7 @@ public class ServiceDefinition implements Serializable {
 	/**
 	 * 	路径匹配规则：访问真实ANT表达式：定义具体的服务路径的匹配规则
 	 */
-	private String patternPath;
+	private String[] patternPath;
 
 	/**
 	 * 	分组名称
@@ -54,7 +54,7 @@ public class ServiceDefinition implements Serializable {
 		super();
 	}
 
-	public ServiceDefinition(String uniqueId, String serviceId, String version, String protocol, String patternPath,
+	public ServiceDefinition(String uniqueId, String serviceId, String version, String protocol, String[] patternPath,
 							 String group, boolean enable) {
 		super();
 		this.uniqueId = uniqueId;
