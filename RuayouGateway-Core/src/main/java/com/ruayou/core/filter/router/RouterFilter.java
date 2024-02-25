@@ -41,23 +41,19 @@ public class RouterFilter implements Filter {
     private void complete(GatewayContext ctx, Request request,Response response, Throwable throwable) {
         ctx.releaseRequest();
         int currentRetryCount = ctx.getCurrentRetryCount();
-
-        //由于没有配置文件为设计完善。
-        int retryCount =3; //ctx.getFilterRule().getRetryConfig().getRetryCount();
+        int retryCount =ctx.getFilterRule().getRetryConfig().getRetryCount();
         if ((throwable instanceof TimeoutException || throwable instanceof IOException) && currentRetryCount <= retryCount)
-        {//&& !hystrixConfig.isPresent()
+        {
+            //&& !hystrixConfig.isPresent()
             //请求重试
             doRetry(ctx, currentRetryCount);
             return;
         }
         try{
             if(Objects.nonNull(throwable)){
-                //重试之后还是发生异常的逻辑。
-                //临时处理方案。
                 ctx.setThrowable(new RuntimeException(ResponseCode.HTTP_RESPONSE_ERROR.getMessage()));
                 ctx.setResponse(GatewayResponse.buildGatewayResponse(ResponseCode.HTTP_RESPONSE_ERROR));
-            }else {
-                //请求正常。
+            }else {//请求正常
                 ctx.setResponse(GatewayResponse.buildGatewayResponse(response));
             }
         }catch (Exception e){

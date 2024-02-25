@@ -88,15 +88,25 @@ public class ServerContainer implements LifeCycle{
                 }
             }
         });
-        //订阅路由规则
-        configCenter.subscribeConfigChange(PatternPathConfig.dataId, new ConfigChangeListener() {
+
+        configCenter.subscribeConfigChange(FilterRule.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(String configInfo) {
-                PatternPathConfig patternPathConfig = YamlUtils.parseYaml(configInfo, PatternPathConfig.class);
-                PatternPathConfig.saveConfig(patternPathConfig);
-                log.info("检测到路由规则配置更新：{}",PatternPathConfig.getConfig());
+                FilterRule filterRule=YamlUtils.parseYaml(configInfo, FilterRule.class);
+                FilterRule.saved(filterRule);
+                log.info("检测到过滤规则配置更新：{}",FilterRule.getFilterRule());
             }
         });
+//        //订阅路由规则暂时弃用
+//        configCenter.subscribeConfigChange(PatternPathConfig.dataId, new ConfigChangeListener() {
+//            @Override
+//            public void onConfigChange(String configInfo) {
+//                PatternPathConfig patternPathConfig = YamlUtils.parseYaml(configInfo, PatternPathConfig.class);
+//                PatternPathConfig.saveConfig(patternPathConfig);
+//                log.info("检测到路由规则配置更新：{}",PatternPathConfig.getConfig());
+//            }
+//        });
+
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
 

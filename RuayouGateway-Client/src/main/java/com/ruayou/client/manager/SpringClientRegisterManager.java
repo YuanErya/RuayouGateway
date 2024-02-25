@@ -2,8 +2,10 @@ package com.ruayou.client.manager;
 import com.ruayou.client.AutoRegisterProperties;
 import com.ruayou.client.annotation.AnnotationScanner;
 import com.ruayou.client.annotation.RGService;
+import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.utils.NetUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +72,15 @@ public class SpringClientRegisterManager extends AutoRegisterManager implements 
                 super.properties.getEnv(),true);
 
         ServiceInstance serviceInstance = new ServiceInstance();
-        //具体实例信息
+        String localIp = NetUtils.getLocalIp();
+        int port = serverProperties.getPort();
+        serviceInstance.setServiceInstanceId(localIp + ":" + port);
+        serviceInstance.setIp(localIp);
+        serviceInstance.setPort(port);
+        serviceInstance.setWeight(ServiceConst.DEFAULT_WEIGHT);
+        serviceInstance.setRegisterTime(System.currentTimeMillis());
+        serviceInstance.setUniqueId(serviceDefinition.getUniqueId());
+        //具体实例信息待完善
         if (properties.isGray()){
             serviceInstance.setGray(true);
         }

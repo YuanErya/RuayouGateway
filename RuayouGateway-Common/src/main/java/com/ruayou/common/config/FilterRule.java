@@ -13,6 +13,15 @@ import java.util.Map;
  */
 @Data
 public class FilterRule {
+    public static FilterRule Global;
+    public static void saved(FilterRule filterRule){
+        Global=filterRule;
+    }
+    public static  FilterRule getFilterRule(){
+        return Global;
+    }
+
+    public static final String dataId = "FilterRule";
 
     /**
      * 规则ID，全局唯一
