@@ -133,7 +133,7 @@ public class ServerContainer implements LifeCycle{
         registerCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         //构造网关服务定义和服务实例
         ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(nacosConfig);
-        ServiceInstance serviceInstance = buildGatewayServiceInstance(nettyServerConfig,nacosConfig);
+        ServiceInstance serviceInstance = buildGatewayServiceInstance(serviceDefinition,nettyServerConfig,nacosConfig);
         //注册
         registerCenter.register(serviceDefinition, serviceInstance);
         //订阅
@@ -152,7 +152,7 @@ public class ServerContainer implements LifeCycle{
         return registerCenter;
     }
 
-    private static ServiceInstance buildGatewayServiceInstance(NettyServerConfig nettyServerConfig,NacosConfig config) {
+    private static ServiceInstance buildGatewayServiceInstance(ServiceDefinition definition,NettyServerConfig nettyServerConfig,NacosConfig config) {
         String localIp = NetUtils.getLocalIp();
         int port = nettyServerConfig.getPort();
         ServiceInstance serviceInstance = new ServiceInstance();
@@ -161,14 +161,14 @@ public class ServerContainer implements LifeCycle{
         serviceInstance.setPort(port);
         serviceInstance.setWeight(ServiceConst.DEFAULT_WEIGHT);
         serviceInstance.setRegisterTime(System.currentTimeMillis());
-        serviceInstance.setUniqueId(config.getApplicationName());
+        serviceInstance.setUniqueId(definition.getUniqueId());
         return serviceInstance;
     }
 
     private static ServiceDefinition buildGatewayServiceDefinition(NacosConfig config) {
         String applicationName = config.getApplicationName();
         ServiceDefinition serviceDefinition = new ServiceDefinition();
-        serviceDefinition.setUniqueId(applicationName);
+        serviceDefinition.setUniqueId(applicationName+":"+serviceDefinition.getVersion());
         serviceDefinition.setServiceId(applicationName);
         serviceDefinition.setGroup(config.getEnv());
         return serviceDefinition;

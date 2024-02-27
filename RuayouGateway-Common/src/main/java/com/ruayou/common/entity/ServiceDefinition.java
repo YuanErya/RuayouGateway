@@ -28,7 +28,7 @@ public class ServiceDefinition implements Serializable {
 	/**
 	 * 	服务的版本号
 	 */
-	private String version;
+	private String version = "1.0.0";
 
 	/**
 	 * 	服务的具体协议：http(mvc http) dubbo ..
