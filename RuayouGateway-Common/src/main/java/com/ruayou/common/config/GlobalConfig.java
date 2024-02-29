@@ -15,6 +15,7 @@ public class GlobalConfig implements Config {
     private NettyServerConfig nettyServerConfig = new NettyServerConfig();
     private HttpClientConfig httpClientConfig = new HttpClientConfig();
     private NacosConfig nacosConfig = new NacosConfig();
+    private DisruptorConfig disruptorConfig= new DisruptorConfig();
     public static GlobalConfig getConfig() {
         if (INSTANCE == null) INSTANCE = new GlobalConfig();
         return INSTANCE;
@@ -23,3 +24,5 @@ public class GlobalConfig implements Config {
         INSTANCE = config;
     }
 }
+
+

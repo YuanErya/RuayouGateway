@@ -1,17 +1,17 @@
 package com.ruayou.client;
 
 import com.ruayou.client.manager.SpringClientRegisterManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.annotation.Resource;
-import javax.servlet.Servlet;
 
 /**
  * @Author：ruayou
@@ -21,15 +21,18 @@ import javax.servlet.Servlet;
 
 @Configuration
 @EnableConfigurationProperties(AutoRegisterProperties.class)
-@ConditionalOnProperty(prefix = "ruayou.register", name = {"address"})
+@ConditionalOnProperty(prefix = "register", name = {"address"})
 public class ServiceRegisterAutoConfiguration {
-    @Resource
+    @Autowired
     private AutoRegisterProperties properties;
 
+    @Autowired
+    private ServerProperties serverProperties;
+
     @Bean
-    @ConditionalOnClass({Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class})
+    @ConditionalOnClass({DispatcherServlet.class, WebMvcConfigurer.class})
     @ConditionalOnMissingBean(SpringClientRegisterManager.class)
     public SpringClientRegisterManager springMVCClientRegisterManager() {
-        return new SpringClientRegisterManager(properties);
+        return new SpringClientRegisterManager(properties,serverProperties);
     }
 }

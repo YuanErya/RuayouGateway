@@ -8,7 +8,6 @@ import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.utils.NetUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
@@ -24,20 +23,14 @@ import java.util.List;
  * @Filename：SpringClientRegisterManager
  */
 @Log4j2
-public class SpringClientRegisterManager extends AutoRegisterManager implements ApplicationListener<ApplicationEvent>, ApplicationContextAware {
+public class SpringClientRegisterManager extends AbstractRegisterManager implements ApplicationListener<ApplicationEvent>, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    @Autowired
     private ServerProperties serverProperties;
-    public SpringClientRegisterManager(AutoRegisterProperties properties) {
+    public SpringClientRegisterManager(AutoRegisterProperties properties,ServerProperties serverProperties) {
         super(properties);
+        this.serverProperties=serverProperties;
     }
-
-    @Override
-    public void doRegister() {
-
-    }
-
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -28,7 +28,7 @@ public class RequestHelper {
 
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);
-        FilterRule filterRule=FilterRule.getFilterRule();
+        FilterRule filterRule=ServiceAndInstanceManager.getManager().getRuleByPath(gateWayRequest.getPath());
         if (gateWayRequest.getUniqueId()==null) {
             Map<String, String> patterns = filterRule.getPatterns();
             patterns.keySet().forEach((pattern)->{

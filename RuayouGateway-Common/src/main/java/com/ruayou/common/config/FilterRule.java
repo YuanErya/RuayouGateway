@@ -13,16 +13,6 @@ import java.util.Map;
  */
 @Data
 public class FilterRule {
-    public static FilterRule Global;
-    public static void saved(FilterRule filterRule){
-        Global=filterRule;
-    }
-    public static  FilterRule getFilterRule(){
-        return Global;
-    }
-
-    public static final String dataId = "FilterRule";
-
     /**
      * 规则ID，全局唯一
      */
@@ -31,13 +21,9 @@ public class FilterRule {
     /**
      * 协议
      */
-    private String protocol;
+    private String protocol="http";
 
-    /**
-     * 后端服务ID
-     */
-    private String serviceId;
-
+    private List<String> serviceIds;
     /**
      * 路径匹配模式
      */
@@ -78,7 +64,7 @@ public class FilterRule {
 //    }
     @Data
     public static class RetryConfig {
-        private int retryCount;
+        private int retryCount =2;
     }
 
 //    @Data

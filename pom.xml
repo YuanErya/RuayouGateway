@@ -28,6 +28,7 @@
         <commons-lang3.version>3.3.2</commons-lang3.version>
         <yaml.version>1.30</yaml.version>
         <lombok.version>1.18.30</lombok.version>
+        <guava.version>33.0.0-jre</guava.version>
         <junit.version>4.12</junit.version>
 
     </properties>
@@ -64,6 +65,12 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${yaml.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>

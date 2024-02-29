@@ -4,6 +4,7 @@ import com.ruayou.client.AutoRegisterProperties;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ServiceLoader;
@@ -14,13 +15,14 @@ import java.util.ServiceLoader;
  * @Filename：ClientRegisterManager
  */
 @Log4j2
-public abstract class AutoRegisterManager {
+public abstract class AbstractRegisterManager {
 
+    @Getter
     AutoRegisterProperties properties;
 
     private RegisterCenter registerCenter;
 
-    protected AutoRegisterManager(AutoRegisterProperties properties) {
+    protected AbstractRegisterManager(AutoRegisterProperties properties) {
         this.properties = properties;
 
         //初始化注册中心对象
@@ -39,5 +41,4 @@ public abstract class AutoRegisterManager {
         registerCenter.register(serviceDefinition, serviceInstance);
     }
 
-    public abstract void doRegister();
 }

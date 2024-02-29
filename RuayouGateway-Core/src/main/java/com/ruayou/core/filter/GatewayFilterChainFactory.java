@@ -1,6 +1,5 @@
 package com.ruayou.core.filter;
 
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.ruayou.common.config.FilterRule;
@@ -8,12 +7,9 @@ import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.filter.router.RouterFilter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import static com.ruayou.common.constant.FilterConst.LOAD_BALANCE_FILTER_ID;
 
 /**
  * @Author：ruayou

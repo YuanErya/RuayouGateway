@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.3.12.RELEASE</version>
+            <version>3.1.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -41,13 +41,11 @@
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Common</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Nacos-Register-Center</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
 
     </dependencies>

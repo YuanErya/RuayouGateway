@@ -2,10 +2,9 @@ package com.ruayou.common.config;
 
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.utils.PathUtils;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,13 @@ public class ServiceAndInstanceManager {
 
     //	服务的实例集合：uniqueId与一对服务实例对应
     private ConcurrentHashMap<String /* uniqueId */ , Set<ServiceInstance>>  serviceInstanceMap = new ConcurrentHashMap<>();
+
+
+
+    private ConcurrentHashMap<String /* ruleId */ , FilterRule>  ruleMap = new ConcurrentHashMap<>();
+
+    //路径以及规则集合
+    private ConcurrentHashMap<String /* 路径 */ , FilterRule>  pathRuleMap = new ConcurrentHashMap<>();
 
     public static ServiceAndInstanceManager getManager() {
         return INSTANCE;
@@ -99,4 +105,47 @@ public class ServiceAndInstanceManager {
         serviceInstanceMap.remove(uniqueId);
     }
 
+
+    /***************** 	对规则缓存进行操作的系列方法 	***************/
+    public void putRule(String ruleId, FilterRule rule) {
+        ruleMap.put(ruleId, rule);
+    }
+
+    public void putAllFilterRules(FilterRules filterRules){
+        ConcurrentHashMap<String,FilterRule> newRuleMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String,FilterRule> newPathMap = new ConcurrentHashMap<>();
+        List<FilterRule> rules = filterRules.getRules();
+        for (FilterRule rule : rules) {
+            newRuleMap.put(rule.getRuleId(),rule);
+            Set<String> keySet = rule.getPatterns().keySet();
+            for (String pattern : keySet) {
+                newPathMap.put(pattern,rule);
+            }
+        }
+        this.ruleMap=newRuleMap;
+        this.pathRuleMap=newPathMap;
+    }
+
+    public FilterRule getRule(String ruleId) {
+        return ruleMap.get(ruleId);
+    }
+    public void removeRule(String ruleId) {
+        ruleMap.remove(ruleId);
+    }
+
+    /**
+     * 传入路径，模式匹配
+     *
+     * @param path
+     * @return
+     */
+    public FilterRule  getRuleByPath(String path){
+        ConcurrentHashMap.KeySetView<String, FilterRule> keySet = pathRuleMap.keySet();
+        for (String pattern : keySet) {
+            if (PathUtils.isMatch(path, pattern)) {
+                return pathRuleMap.get(pattern);
+            }
+        }
+        return pathRuleMap.get(path);
+    }
 }

@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+register:
+  address: 127.0.0.1:8848
+  env: dev
+  gray: false
+
+#debug: true

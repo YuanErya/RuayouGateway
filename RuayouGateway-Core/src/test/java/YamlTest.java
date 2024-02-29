@@ -1,5 +1,6 @@
 
 import com.ruayou.common.config.FilterRule;
+import com.ruayou.common.config.FilterRules;
 import com.ruayou.common.config.PatternPathConfig;
 import com.ruayou.common.utils.PathUtils;
 import com.ruayou.common.utils.YamlUtils;
@@ -56,8 +57,14 @@ public class YamlTest {
         FilterRule.RetryConfig retryConfig = new FilterRule.RetryConfig();
         retryConfig.setRetryCount(3);
         filterRule.setRetryConfig(retryConfig);
-        filterRule.setServiceId("user-service");
-        System.out.println(YamlUtils.toYaml(filterRule));
+        //System.out.println(YamlUtils.toYaml(filterRule));
+
+        FilterRules rules=FilterRules.getGlobalRules();
+        rules.addRule(rules.getDefaultFilterRule());
+        rules.addRule(filterRule);
+        System.out.println(YamlUtils.toYaml(rules));
+
+
     }
 
 }

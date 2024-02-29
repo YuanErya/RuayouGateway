@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Filename：AutoRegisterConfig
  */
 @Data
-@ConfigurationProperties(prefix = "ruayou.register")
+@ConfigurationProperties(prefix = "register")
 public class AutoRegisterProperties {
     /**
      * 注册中心地址

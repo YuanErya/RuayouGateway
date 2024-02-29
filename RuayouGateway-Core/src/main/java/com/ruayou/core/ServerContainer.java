@@ -13,6 +13,7 @@ import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
 import com.ruayou.core.netty.NettyHttpServer;
+import com.ruayou.core.netty.processor.DisruptorHttpServerProcessor;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 import com.ruayou.register_center.nacosimpl.NacosRegisterCenter;
@@ -44,9 +45,10 @@ public class ServerContainer implements LifeCycle{
         if (initFlag) {
             return;
         }
-        //后期调整核心处理器
         HttpServerCoreProcessor coreProcessor=new HttpServerCoreProcessor();
-        this.processor=coreProcessor;
+        //后期调整核心处理器
+        DisruptorHttpServerProcessor processor=new DisruptorHttpServerProcessor(globalConfig.getDisruptorConfig(),coreProcessor);
+        this.processor=processor;
         run.add(processor);
         NettyHttpServer server = new NettyHttpServer(nettyServerConfig, processor);
         run.add(server);
@@ -89,12 +91,12 @@ public class ServerContainer implements LifeCycle{
             }
         });
 
-        configCenter.subscribeConfigChange(FilterRule.dataId, new ConfigChangeListener() {
+        configCenter.subscribeConfigChange(FilterRules.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(String configInfo) {
-                FilterRule filterRule=YamlUtils.parseYaml(configInfo, FilterRule.class);
-                FilterRule.saved(filterRule);
-                log.info("检测到过滤规则配置更新：{}",FilterRule.getFilterRule());
+                FilterRules filterRules=YamlUtils.parseYaml(configInfo, FilterRules.class);
+                FilterRules.updateRules(filterRules);
+                log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
 //        //订阅路由规则暂时弃用

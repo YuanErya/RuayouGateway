@@ -16,31 +16,36 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <caffeine.version>3.1.5</caffeine.version>
+        <disruptor.version>3.3.6</disruptor.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Common</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Nacos-Register-Center</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Nacos-Config-Center</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>${caffeine.version}</version>
+        </dependency>
+
+        <!-- 无锁队列做异步 -->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
         </dependency>
     </dependencies>
 
