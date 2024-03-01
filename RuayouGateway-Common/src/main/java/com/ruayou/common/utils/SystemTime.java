@@ -26,7 +26,7 @@ public class SystemTime {
             }
         });
         daemon.setDaemon(true);
-        daemon.setName("common-fd-time-tick-thread");
+        daemon.setName("time-tick-thread");
         daemon.start();
     }
 

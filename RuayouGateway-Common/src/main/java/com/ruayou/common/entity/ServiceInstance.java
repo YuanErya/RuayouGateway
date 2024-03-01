@@ -19,7 +19,7 @@ public class ServiceInstance implements Serializable {
 	protected String serviceInstanceId;
 	
 	/**
-	 * 	服务定义唯一id： uniqueId
+	 * 	服务定义唯一id: serviceID+:+VERSION
 	 */
 	protected String uniqueId;
 
@@ -27,7 +27,9 @@ public class ServiceInstance implements Serializable {
 	 * 	服务实例地址： ip:port
 	 */
 	protected String ip;
-
+	/**
+	 * 端口
+	 */
 	protected int port;
 	
 	/**
@@ -41,7 +43,7 @@ public class ServiceInstance implements Serializable {
 	protected int weight;
 	
 	/**
-	 * 	服务注册的时间戳：后面我们做负载均衡，warmup预热
+	 * 	服务注册的时间戳
 	 */
 	protected long registerTime;
 	

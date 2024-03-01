@@ -42,7 +42,7 @@
         <Logger name="com.ruayou.core.filter.*" level="INFO" includeLocation="false">
             <AppenderRef ref="AccessLogFile"/>
         </Logger>
-        <Logger name="com.ruayou.core" level="DEBUG" includeLocation="true">
+        <Logger name="com.ruayou.core" level="INFO" includeLocation="true">
             <AppenderRef ref="RandomAccessFile"/>
         </Logger>
         <Root level="INFO">

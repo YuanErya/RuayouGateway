@@ -4,6 +4,7 @@ import com.ruayou.common.config.FilterRule;
 import com.ruayou.core.context.request.GatewayRequest;
 import com.ruayou.core.context.response.GatewayResponse;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.ReferenceCountUtil;
 
 
 /**
@@ -16,7 +17,7 @@ public class GatewayContext extends Context{
     /**
      * 服务的唯一ID
      */
-    private String uniqueId;
+    private String serviceId;
 
     private GatewayRequest request;
 
@@ -28,12 +29,12 @@ public class GatewayContext extends Context{
 
     private FilterRule filterRule;
 
-    public String getUniqueId() {
-        return uniqueId;
+    public String getServiceId() {
+        return serviceId;
     }
 
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
     }
 
     public GatewayRequest getRequest() {
@@ -76,11 +77,17 @@ public class GatewayContext extends Context{
         this.filterRule = filterRule;
     }
 
+    public void releaseRequest(){
+        if(requestReleased.compareAndSet(false,true)){
+            ReferenceCountUtil.release(request.getFullHttpRequest());
+        }
+    }
+
     public GatewayContext(String protocol, ChannelHandlerContext nettyCtx, boolean keepAlive,
-                          GatewayRequest request, FilterRule filterRule, int currentRetryCount) {
+                          GatewayRequest request,String serviceId, FilterRule filterRule, int currentRetryCount) {
         super(protocol, nettyCtx, keepAlive);
         this.request = request;
-        this.uniqueId=request.getUniqueId();
+        this.serviceId=serviceId;
         this.currentRetryCount = currentRetryCount;
         this.filterRule=filterRule;
     }

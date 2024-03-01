@@ -1,5 +1,7 @@
 package com.ruayou.core.filter.router;
 import com.ruayou.common.enums.ResponseCode;
+import com.ruayou.common.exception.ConnectException;
+import com.ruayou.common.exception.ResponseException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.response.GatewayResponse;
 import com.ruayou.core.filter.Filter;
@@ -51,8 +53,15 @@ public class RouterFilter implements Filter {
         }
         try{
             if(Objects.nonNull(throwable)){
-                ctx.setThrowable(new RuntimeException(ResponseCode.HTTP_RESPONSE_ERROR.getMessage()));
-                ctx.setResponse(GatewayResponse.buildGatewayResponse(ResponseCode.HTTP_RESPONSE_ERROR));
+                if (throwable instanceof TimeoutException) {
+                    ctx.setThrowable(new ResponseException(ResponseCode.REQUEST_TIMEOUT));
+                    ctx.setResponse(GatewayResponse.buildGatewayResponse(ResponseCode.REQUEST_TIMEOUT));
+                }else{
+                    ctx.setThrowable(new ConnectException(throwable, ctx.getServiceId(), request.getUrl(),
+                            ResponseCode.HTTP_RESPONSE_ERROR));
+                    ctx.setResponse(GatewayResponse.buildGatewayResponse(ResponseCode.HTTP_RESPONSE_ERROR));
+                }
+
             }else {//请求正常
                 ctx.setResponse(GatewayResponse.buildGatewayResponse(response));
             }
@@ -63,10 +72,9 @@ public class RouterFilter implements Filter {
         } finally {
             ctx.written();//设置状态
             ResponseHelper.writeResponse(ctx);
-            log.info("{} {} {} {} {} {} {}",
+            log.debug("{} {} {} {} {} {}",
                     System.currentTimeMillis() - ctx.getRequest().getBeginTime(),
                     ctx.getRequest().getClientIp(),
-                    ctx.getRequest().getUniqueId(),
                     ctx.getRequest().getMethod(),
                     ctx.getRequest().getPath(),
                     ctx.getResponse().getHttpResponseStatus().code(),

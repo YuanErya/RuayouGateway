@@ -5,6 +5,7 @@ import com.ruayou.common.api_interface.config_center.ConfigChangeListener;
 import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.api_interface.register_center.RegisterCenterListener;
 import com.ruayou.common.config.*;
+import com.ruayou.common.constant.CommonConst;
 import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
@@ -142,14 +143,13 @@ public class ServerContainer implements LifeCycle{
         registerCenter.subscribeAllServices(new RegisterCenterListener() {
             @Override
             public void onChange(ServiceDefinition serviceDefinition, Set<ServiceInstance> serviceInstanceSet) {
-                log.info("refresh service and instance: {} {}", serviceDefinition.getUniqueId(), serviceInstanceSet);
+                log.info("refresh service and instance: {} {}", serviceDefinition.getServiceId(), serviceInstanceSet);
                 //要做的是把变更的新的获取到的新的实例的列表重新保存
                 ServiceAndInstanceManager manager = ServiceAndInstanceManager.getManager();
                 //将这次变更事件影响之后的服务实例再次添加到对应的服务实例集合
-                manager.addServiceInstance(serviceDefinition.getUniqueId(), serviceInstanceSet);
+                manager.addServiceInstance(serviceDefinition.getServiceId(), serviceInstanceSet);
                 //修改发生对应的服务定义
-                manager.putServiceDefinition(serviceDefinition.getUniqueId(),serviceDefinition);
-
+                manager.putServiceDefinition(serviceDefinition.getServiceId(),serviceDefinition);
             }
         });
         return registerCenter;
@@ -159,21 +159,20 @@ public class ServerContainer implements LifeCycle{
         String localIp = NetUtils.getLocalIp();
         int port = nettyServerConfig.getPort();
         ServiceInstance serviceInstance = new ServiceInstance();
-        serviceInstance.setServiceInstanceId(localIp + ":" + port);
+        serviceInstance.setServiceInstanceId(localIp + CommonConst.COLON_SEPARATOR + port);
         serviceInstance.setIp(localIp);
         serviceInstance.setPort(port);
         serviceInstance.setWeight(ServiceConst.DEFAULT_WEIGHT);
         serviceInstance.setRegisterTime(System.currentTimeMillis());
-        serviceInstance.setUniqueId(definition.getUniqueId());
+        serviceInstance.setUniqueId(definition.getServiceId()+ CommonConst.COLON_SEPARATOR +GlobalConfig.version);
         return serviceInstance;
     }
 
     private static ServiceDefinition buildGatewayServiceDefinition(NacosConfig config) {
         String applicationName = config.getApplicationName();
         ServiceDefinition serviceDefinition = new ServiceDefinition();
-        serviceDefinition.setUniqueId(applicationName+":"+serviceDefinition.getVersion());
         serviceDefinition.setServiceId(applicationName);
-        serviceDefinition.setGroup(config.getEnv());
+        serviceDefinition.setEnv(config.getEnv());
         return serviceDefinition;
     }
 

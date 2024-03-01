@@ -1,6 +1,8 @@
 package com.ruayou.core.netty.processor;
 
 import com.ruayou.common.enums.ResponseCode;
+import com.ruayou.common.exception.GatewayException;
+import com.ruayou.common.exception.ServiceNotFoundException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.HttpRequestWrapper;
 import com.ruayou.core.filter.FilterChainFactory;
@@ -30,7 +32,14 @@ public class HttpServerCoreProcessor implements HttpProcessor{
         try{
             GatewayContext gatewayContext = RequestHelper.buildContext(request, ctx);
             filterChainFactory.buildFilterChain(gatewayContext).doFilters(gatewayContext);
-        }catch (Exception e){
+
+        }
+        catch (GatewayException e){
+            log.error("发现异常{}",e.getMessage());
+            FullHttpResponse httpResponse = ResponseHelper.getHttpResponse(e.getCode());
+            doWriteAndRelease(ctx, request, httpResponse);
+        }
+        catch (Exception e){
             log.error("发现异常{}",e.getMessage());
             //log.error("处理错误 {} {}", e.getCode().getCode(), e.getCode().getMessage());
             FullHttpResponse httpResponse = ResponseHelper.getHttpResponse(ResponseCode.INTERNAL_ERROR);

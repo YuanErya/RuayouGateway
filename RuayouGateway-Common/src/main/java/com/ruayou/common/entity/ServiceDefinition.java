@@ -16,19 +16,9 @@ public class ServiceDefinition implements Serializable {
 	private static final long serialVersionUID = -8263365765897285189L;
 
 	/**
-	 * 	唯一的服务ID: serviceId:version
-	 */
-	private String uniqueId;
-
-	/**
 	 * 	服务唯一id
 	 */
 	private String serviceId;
-
-	/**
-	 * 	服务的版本号
-	 */
-	private String version = "1.0.0";
 
 	/**
 	 * 	服务的具体协议：http(mvc http) dubbo ..
@@ -41,9 +31,9 @@ public class ServiceDefinition implements Serializable {
 	private List<String> patternPath;
 
 	/**
-	 * 	分组名称
+	 * 	环境名称
 	 */
-	private String group;
+	private String env;
 
 	/**
 	 * 	服务启用禁用
@@ -54,15 +44,13 @@ public class ServiceDefinition implements Serializable {
 		super();
 	}
 
-	public ServiceDefinition(String uniqueId, String serviceId, String version, String protocol, String[] patternPath,
-							 String group, boolean enable) {
+	public ServiceDefinition( String serviceId,  String protocol, String[] patternPath,
+							 String env, boolean enable) {
 		super();
-		this.uniqueId = uniqueId;
 		this.serviceId = serviceId;
-		this.version = version;
 		this.protocol = protocol;
 		this.patternPath = Arrays.asList(patternPath);
-		this.group = group;
+		this.env = env;
 		this.enable = enable;
 	}
 }

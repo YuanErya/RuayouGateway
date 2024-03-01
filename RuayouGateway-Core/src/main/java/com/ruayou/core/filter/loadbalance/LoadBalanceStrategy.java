@@ -16,5 +16,5 @@ public interface LoadBalanceStrategy {
      * @param gray
      * @return
      */
-    ServiceInstance choose(String serviceId,boolean gray);
+    ServiceInstance choose(String serviceId,String version,boolean gray);
 }

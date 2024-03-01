@@ -34,18 +34,17 @@ public class ServiceAndInstanceManager {
 
     /***************** 	对服务定义缓存进行操作的系列方法 	***************/
 
-    public void putServiceDefinition(String uniqueId,
+    public void putServiceDefinition(String serviceId,
                                      ServiceDefinition serviceDefinition) {
-        serviceDefinitionMap.put(uniqueId, serviceDefinition);
-        ;
+        serviceDefinitionMap.put(serviceId, serviceDefinition);
     }
 
-    public ServiceDefinition getServiceDefinition(String uniqueId) {
-        return serviceDefinitionMap.get(uniqueId);
+    public ServiceDefinition getServiceDefinition(String serviceId) {
+        return serviceDefinitionMap.get(serviceId);
     }
 
-    public void removeServiceDefinition(String uniqueId) {
-        serviceDefinitionMap.remove(uniqueId);
+    public void removeServiceDefinition(String serviceId) {
+        serviceDefinitionMap.remove(serviceId);
     }
 
     public ConcurrentHashMap<String, ServiceDefinition> getServiceDefinitionMap() {
@@ -54,11 +53,16 @@ public class ServiceAndInstanceManager {
 
     /***************** 	对服务实例缓存进行操作的系列方法 	***************/
 
-    public Set<ServiceInstance> getServiceInstanceByUniqueId(String uniqueId, boolean gray) {
-        Set<ServiceInstance> serviceInstances = serviceInstanceMap.get(uniqueId);
+    public Set<ServiceInstance> getServiceInstanceByServiceId(String serviceId, boolean gray,String version) {
+
+        //待添加缓存
+        Set<ServiceInstance> serviceInstances = serviceInstanceMap.get(serviceId);
         if (serviceInstances == null || serviceInstances.isEmpty()) {
             return Collections.emptySet();
         }
+        serviceInstances=serviceInstances.stream()
+                .filter((instance)-> instance.getVersion().equals(version))
+                .collect(Collectors.toSet());
         //不为空且为灰度流量
         if (gray) {
             return serviceInstances.stream()
@@ -68,17 +72,17 @@ public class ServiceAndInstanceManager {
         return serviceInstances;
     }
 
-    public void addServiceInstance(String uniqueId, ServiceInstance serviceInstance) {
-        Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
+    public void addServiceInstance(String serviceId, ServiceInstance serviceInstance) {
+        Set<ServiceInstance> set = serviceInstanceMap.get(serviceId);
         set.add(serviceInstance);
     }
 
-    public void addServiceInstance(String uniqueId, Set<ServiceInstance> serviceInstanceSet) {
-        serviceInstanceMap.put(uniqueId, serviceInstanceSet);
+    public void addServiceInstance(String serviceId, Set<ServiceInstance> serviceInstanceSet) {
+        serviceInstanceMap.put(serviceId, serviceInstanceSet);
     }
 
-    public void updateServiceInstance(String uniqueId, ServiceInstance serviceInstance) {
-        Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
+    public void updateServiceInstance(String serviceId, ServiceInstance serviceInstance) {
+        Set<ServiceInstance> set = serviceInstanceMap.get(serviceId);
         Iterator<ServiceInstance> it = set.iterator();
         while (it.hasNext()) {
             ServiceInstance is = it.next();
@@ -90,8 +94,8 @@ public class ServiceAndInstanceManager {
         set.add(serviceInstance);
     }
 
-    public void removeServiceInstance(String uniqueId, String serviceInstanceId) {
-        Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
+    public void removeServiceInstance(String serviceId, String serviceInstanceId) {
+        Set<ServiceInstance> set = serviceInstanceMap.get(serviceId);
         Iterator<ServiceInstance> it = set.iterator();
         while (it.hasNext()) {
             ServiceInstance is = it.next();
@@ -102,8 +106,8 @@ public class ServiceAndInstanceManager {
         }
     }
 
-    public void removeServiceInstancesByUniqueId(String uniqueId) {
-        serviceInstanceMap.remove(uniqueId);
+    public void removeServiceInstancesByServiceId(String serviceId) {
+        serviceInstanceMap.remove(serviceId);
     }
 
 

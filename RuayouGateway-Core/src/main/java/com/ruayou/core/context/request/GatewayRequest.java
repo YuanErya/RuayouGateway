@@ -21,14 +21,6 @@ import java.util.*;
 
 @Slf4j
 public class GatewayRequest implements IGatewayRequest{
-
-    /**
-     * 服务ID
-     */
-    @Getter
-    @Setter
-    private  String uniqueId;
-
     /**
      * 请求进入网关时间
      */
@@ -137,7 +129,6 @@ public class GatewayRequest implements IGatewayRequest{
 
     /**
      * 构造器
-     * @param uniqueId
      * @param charset
      * @param clientIp
      * @param host
@@ -147,8 +138,7 @@ public class GatewayRequest implements IGatewayRequest{
      * @param headers
      * @param fullHttpRequest
      */
-    public GatewayRequest(String uniqueId, Charset charset, String clientIp, String host, String uri, HttpMethod method, String contentType, HttpHeaders headers, FullHttpRequest fullHttpRequest) {
-        this.uniqueId = uniqueId;
+    public GatewayRequest(Charset charset, String clientIp, String host, String uri, HttpMethod method, String contentType, HttpHeaders headers, FullHttpRequest fullHttpRequest) {
         this.beginTime = SystemTime.currentTimeMillis();
         this.charset = charset;
         this.clientIp = clientIp;

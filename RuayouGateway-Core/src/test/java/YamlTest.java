@@ -62,6 +62,7 @@ public class YamlTest {
         FilterRules rules=FilterRules.getGlobalRules();
        // rules.addRule(rules.getDefaultFilterRule());
         rules.addRule(filterRule);
+        rules.addRule(filterRule);
         System.out.println(YamlUtils.toYaml(rules));
 
 

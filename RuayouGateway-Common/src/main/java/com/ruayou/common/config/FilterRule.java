@@ -23,12 +23,18 @@ public class FilterRule {
      */
     private String protocol="http";
 
+    /**
+     * 版本
+     */
+    private String version;
+    /**
+     * 生效的服务
+     */
     private List<String> serviceIds;
     /**
      * 路径匹配模式
      */
     private Map<String,String> patterns =new HashMap<>();
-
     /**
      * 优先级
      */

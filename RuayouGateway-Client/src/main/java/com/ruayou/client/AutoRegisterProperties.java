@@ -22,5 +22,5 @@ public class AutoRegisterProperties {
     /**
      * 是否灰度发布
      */
-    private boolean gray;
+    private boolean gray = false ;
 }

@@ -12,6 +12,7 @@ import lombok.Data;
 public class GlobalConfig implements Config {
     private static GlobalConfig INSTANCE;
     public static String dataId = "GlobalConfig";
+    public static String version = "1.0.0";
     private NettyServerConfig nettyServerConfig = new NettyServerConfig();
     private HttpClientConfig httpClientConfig = new HttpClientConfig();
     private NacosConfig nacosConfig = new NacosConfig();

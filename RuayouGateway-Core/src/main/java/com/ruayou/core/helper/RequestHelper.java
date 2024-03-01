@@ -5,6 +5,7 @@ import com.ruayou.common.config.ServiceAndInstanceManager;
 import com.ruayou.common.constant.CommonConst;
 import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
+import com.ruayou.common.exception.ServiceNotFoundException;
 import com.ruayou.common.utils.PathUtils;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.request.GatewayRequest;
@@ -19,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
+
 /**
  * @Author：ruayou
  * @Date：2024/2/6 17:07
@@ -28,24 +31,28 @@ public class RequestHelper {
 
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);
-        FilterRule filterRule=ServiceAndInstanceManager.getManager().getRuleByPath(gateWayRequest.getPath());
-        if (gateWayRequest.getUniqueId()==null) {
-            Map<String, String> patterns = filterRule.getPatterns();
-            patterns.keySet().forEach((pattern)->{
-                if (PathUtils.isMatch(gateWayRequest.getPath(),pattern)) {
-                    gateWayRequest.setUniqueId(patterns.get(pattern));
-                }
-            });
-        }//因该在构建请求的时候设置，后期改进。
+        FilterRule filterRule = ServiceAndInstanceManager.getManager().getRuleByPath(gateWayRequest.getPath());
+        Map<String, String> patterns = filterRule.getPatterns();
+        String serviceId="";
+        for (String pattern : patterns.keySet()) {
+            if (PathUtils.isMatch(gateWayRequest.getPath(), pattern)) {
+                serviceId = patterns.get(pattern);
+                break;
+            }
+        }
         ServiceDefinition serviceDefinition =
-                ServiceAndInstanceManager.getManager().getServiceDefinition(gateWayRequest.getUniqueId());
+                ServiceAndInstanceManager.getManager().getServiceDefinition(serviceId);
+        if(serviceDefinition==null){
+            //注册中心没有找到对应的服务。
+            throw new ServiceNotFoundException(SERVICE_DEFINITION_NOT_FOUND);
+        }
         return new GatewayContext(serviceDefinition.getProtocol(), ctx,
-                HttpUtil.isKeepAlive(request), gateWayRequest, filterRule, 0);
+                HttpUtil.isKeepAlive(request), gateWayRequest,serviceId, filterRule, 0);
     }
+
 
     private static GatewayRequest buildGatewayRequest(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) {
         HttpHeaders headers = fullHttpRequest.headers();
-        String uniqueId = headers.get(ServiceConst.UNIQUE_ID);//待定
         String uri = fullHttpRequest.uri();
         String host = headers.get(HttpHeaderNames.HOST);
         HttpMethod method = fullHttpRequest.method();
@@ -53,7 +60,7 @@ public class RequestHelper {
         String contentType = HttpUtil.getMimeType(fullHttpRequest) == null ? null :
                 HttpUtil.getMimeType(fullHttpRequest).toString();
         Charset charset = HttpUtil.getCharset(fullHttpRequest, StandardCharsets.UTF_8);
-        return new GatewayRequest(uniqueId, charset, clientIp, host, uri, method,
+        return new GatewayRequest(charset, clientIp, host, uri, method,
                 contentType, headers, fullHttpRequest);
     }
 

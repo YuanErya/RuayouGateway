@@ -19,7 +19,7 @@ public class NetUtils {
 
     public static String getLocalIp(String ipPreference) {
         if (ipPreference == null) {
-            ipPreference = "*>10>172>192>127";
+            ipPreference = "*>10>192>172>127";
         }
         String[] prefix = ipPreference.split("[> ]+");
         try {

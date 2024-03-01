@@ -2,6 +2,7 @@ package com.ruayou.core.filter.loadbalance;
 
 import com.ruayou.common.config.ServiceAndInstanceManager;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.InstanceException;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 
 
 /**
@@ -28,13 +31,12 @@ public class RandomLoadBalanceStrategy implements LoadBalanceStrategy {
     }
 
     @Override
-    public ServiceInstance choose(String serviceId, boolean gray) {
-
+    public ServiceInstance choose(String serviceId,String version ,boolean gray) {
         Set<ServiceInstance> serviceInstanceSet =
-                ServiceAndInstanceManager.getManager().getServiceInstanceByUniqueId(serviceId,gray);
+                ServiceAndInstanceManager.getManager().getServiceInstanceByServiceId(serviceId,gray,version);
         if (serviceInstanceSet.isEmpty()) {
             log.warn("No instance available for:{}", serviceId);
-            //throw new NotFoundException(SERVICE_INSTANCE_NOT_FOUND);
+            throw new InstanceException(SERVICE_INSTANCE_NOT_FOUND);
         }
         List<ServiceInstance> instances = new ArrayList<>(serviceInstanceSet);
         int index = ThreadLocalRandom.current().nextInt(instances.size());//生成的随机整数将落在 0 到 instances.size() - 1（包含）之间。

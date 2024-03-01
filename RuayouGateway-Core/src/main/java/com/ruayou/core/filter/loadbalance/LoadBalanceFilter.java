@@ -1,12 +1,14 @@
 package com.ruayou.core.filter.loadbalance;
 
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.InstanceException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.request.GatewayRequest;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import lombok.extern.log4j.Log4j2;
 import static com.ruayou.common.constant.FilterConst.*;
+import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 
 /**
  * @Author：ruayou
@@ -25,9 +27,9 @@ public class LoadBalanceFilter implements Filter {
      */
     @Override
     public void doFilter(GatewayContext ctx) throws Exception {
-        String serviceId = ctx.getUniqueId();
+        String serviceId = ctx.getServiceId();
         LoadBalanceStrategy loadBalanceStrategy =getLoadBalanceStrategy(ctx);
-        ServiceInstance instance=loadBalanceStrategy.choose(ctx.getUniqueId(),ctx.isGray());
+        ServiceInstance instance=loadBalanceStrategy.choose(ctx.getServiceId(),ctx.getFilterRule().getVersion(),ctx.isGray());
         log.debug("选择实例：{}",instance.toString());
         GatewayRequest request = ctx.getRequest();
         if (instance != null && request != null) {
@@ -35,7 +37,7 @@ public class LoadBalanceFilter implements Filter {
             request.setModifyHost(host);
         }else {
             log.warn("No instance available for :{}", serviceId);
-            //throw new NotFoundException(SERVICE_INSTANCE_NOT_FOUND);
+            throw new InstanceException(SERVICE_INSTANCE_NOT_FOUND);
         }
     }
 
@@ -47,6 +49,6 @@ public class LoadBalanceFilter implements Filter {
      * @return
      */
     public LoadBalanceStrategy getLoadBalanceStrategy(GatewayContext ctx) {
-return RandomLoadBalanceStrategy.getInstance(ctx.getUniqueId());
+return RandomLoadBalanceStrategy.getInstance(ctx.getServiceId());
     }
 }
