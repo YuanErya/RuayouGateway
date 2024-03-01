@@ -24,8 +24,6 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest request = (FullHttpRequest) msg;
-        //调试打印请求的详细信息
-        log.debug("\nHEADER:\n{} \nBODY:\n{}",request,request.content().toString(Charset.defaultCharset()));
         processor.process(new HttpRequestWrapper(request,ctx));
     }
     @Override

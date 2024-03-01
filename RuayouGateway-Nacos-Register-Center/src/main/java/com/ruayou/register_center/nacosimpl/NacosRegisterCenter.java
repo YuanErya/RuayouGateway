@@ -81,7 +81,8 @@ public class NacosRegisterCenter implements RegisterCenter {
             namingService.registerInstance(serviceDefinition.getServiceId(), group, changeInstance2Nacos(serviceInstance));
             //更新服务定义
             namingMaintainService.updateService(serviceDefinition.getServiceId(), group, 0,
-                    Map.of(ServiceConst.DATA_KEY, JSON.toJSONString(serviceDefinition)));
+                    Map.of(ServiceConst.DATA_KEY, JSON.toJSONString(serviceDefinition)
+                            ,ServiceConst.FLAG_KEY,ServiceConst.FLAG_INFO));//网关标志
             log.info("register {} {}", serviceDefinition, serviceInstance);
         } catch (NacosException e) {
             log.error(e.getMessage());
@@ -172,6 +173,10 @@ public class NacosRegisterCenter implements RegisterCenter {
                 try {
                     //获取服务定义信息
                     Service service = namingMaintainService.queryService(serviceName, group);
+                    if (!ServiceConst.FLAG_INFO.equals(service.getMetadata().get(ServiceConst.FLAG_KEY))) {
+                        //判断不是该网关客户端注册的服务跳过。
+                        return;
+                    }
                     //得到服务定义信息
                     ServiceDefinition serviceDefinition =
                             JSON.parseObject(service.getMetadata().get(ServiceConst.DATA_KEY),
@@ -190,7 +195,7 @@ public class NacosRegisterCenter implements RegisterCenter {
                     registerCenterListenerList.forEach(registerCenterListener ->
                             registerCenterListener.onChange(serviceDefinition, set));
                 } catch (NacosException e) {
-                    throw new RuntimeException(e);
+                    log.error("异常服务！{}",event);
                 }
             }
         }

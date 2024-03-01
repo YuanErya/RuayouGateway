@@ -24,10 +24,9 @@ public class HttpServerCoreProcessor implements HttpProcessor{
     private final FilterChainFactory filterChainFactory = GatewayFilterChainFactory.getFactory();
     @Override
     public void process(HttpRequestWrapper httpRequestWrapper) {
-        //log.debug("processing request {}",httpRequestWrapper.getRequest());
+        log.debug("processing request {}",httpRequestWrapper.getRequest());
         FullHttpRequest request = httpRequestWrapper.getRequest();
         ChannelHandlerContext ctx = httpRequestWrapper.getCtx();
-
         try{
             GatewayContext gatewayContext = RequestHelper.buildContext(request, ctx);
             filterChainFactory.buildFilterChain(gatewayContext).doFilters(gatewayContext);

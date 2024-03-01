@@ -13,18 +13,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RGService(serviceId = "ping-http-server",patternPath = {"/ping/*"})
 public class PingController {
+    private static Integer count=0;
     @GetMapping("/ping/nb")
     public static String pingNB(){
+        ++count;
+        System.out.println("pong-nb-HttpServer"+count);
         return "pong-nb-HttpServer";
     }
 
     @PostMapping("/ping/mb")
     public static String pingMB(){
+        ++count;
+        System.out.println("pong-nb-HttpServer"+count);
         return "pong-mb-HttpServer";
     }
 
     @PostMapping("/ping/mb/nb")
     public static String pingMBNB(){
+        ++count;
+        System.out.println("pong-nb-HttpServer"+count);
         return "pong-mbnb-HttpServer";
     }
 

@@ -14,19 +14,18 @@ import java.util.stream.Collectors;
  * @Filename：ServiceAndInstanceManager
  */
 public class ServiceAndInstanceManager {
-    private static final ServiceAndInstanceManager INSTANCE=new ServiceAndInstanceManager();
+    private static final ServiceAndInstanceManager INSTANCE = new ServiceAndInstanceManager();
     //	服务的定义集合：uniqueId代表服务的唯一标识
     private ConcurrentHashMap<String /* uniqueId */ , ServiceDefinition> serviceDefinitionMap = new ConcurrentHashMap<>();
 
     //	服务的实例集合：uniqueId与一对服务实例对应
-    private ConcurrentHashMap<String /* uniqueId */ , Set<ServiceInstance>>  serviceInstanceMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String /* uniqueId */ , Set<ServiceInstance>> serviceInstanceMap = new ConcurrentHashMap<>();
 
 
-
-    private ConcurrentHashMap<String /* ruleId */ , FilterRule>  ruleMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String /* ruleId */ , FilterRule> ruleMap = new ConcurrentHashMap<>();
 
     //路径以及规则集合
-    private ConcurrentHashMap<String /* 路径 */ , FilterRule>  pathRuleMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String /* 路径 */ , FilterRule> pathRuleMap = new ConcurrentHashMap<>();
 
     public static ServiceAndInstanceManager getManager() {
         return INSTANCE;
@@ -37,7 +36,8 @@ public class ServiceAndInstanceManager {
 
     public void putServiceDefinition(String uniqueId,
                                      ServiceDefinition serviceDefinition) {
-        serviceDefinitionMap.put(uniqueId, serviceDefinition);;
+        serviceDefinitionMap.put(uniqueId, serviceDefinition);
+        ;
     }
 
     public ServiceDefinition getServiceDefinition(String uniqueId) {
@@ -54,19 +54,20 @@ public class ServiceAndInstanceManager {
 
     /***************** 	对服务实例缓存进行操作的系列方法 	***************/
 
-    public Set<ServiceInstance> getServiceInstanceByUniqueId(String uniqueId, boolean gray){
+    public Set<ServiceInstance> getServiceInstanceByUniqueId(String uniqueId, boolean gray) {
         Set<ServiceInstance> serviceInstances = serviceInstanceMap.get(uniqueId);
-        if (serviceInstances==null||serviceInstances.isEmpty()) {
+        if (serviceInstances == null || serviceInstances.isEmpty()) {
             return Collections.emptySet();
         }
         //不为空且为灰度流量
         if (gray) {
-            return  serviceInstances.stream()
+            return serviceInstances.stream()
                     .filter(ServiceInstance::isGray)
                     .collect(Collectors.toSet());
         }
         return serviceInstances;
     }
+
     public void addServiceInstance(String uniqueId, ServiceInstance serviceInstance) {
         Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
         set.add(serviceInstance);
@@ -79,9 +80,9 @@ public class ServiceAndInstanceManager {
     public void updateServiceInstance(String uniqueId, ServiceInstance serviceInstance) {
         Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
         Iterator<ServiceInstance> it = set.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             ServiceInstance is = it.next();
-            if(is.getServiceInstanceId().equals(serviceInstance.getServiceInstanceId())) {
+            if (is.getServiceInstanceId().equals(serviceInstance.getServiceInstanceId())) {
                 it.remove();
                 break;
             }
@@ -92,9 +93,9 @@ public class ServiceAndInstanceManager {
     public void removeServiceInstance(String uniqueId, String serviceInstanceId) {
         Set<ServiceInstance> set = serviceInstanceMap.get(uniqueId);
         Iterator<ServiceInstance> it = set.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             ServiceInstance is = it.next();
-            if(is.getServiceInstanceId().equals(serviceInstanceId)) {
+            if (is.getServiceInstanceId().equals(serviceInstanceId)) {
                 it.remove();
                 break;
             }
@@ -111,24 +112,26 @@ public class ServiceAndInstanceManager {
         ruleMap.put(ruleId, rule);
     }
 
-    public void putAllFilterRules(FilterRules filterRules){
-        ConcurrentHashMap<String,FilterRule> newRuleMap = new ConcurrentHashMap<>();
-        ConcurrentHashMap<String,FilterRule> newPathMap = new ConcurrentHashMap<>();
-        List<FilterRule> rules = filterRules.getRules();
-        for (FilterRule rule : rules) {
-            newRuleMap.put(rule.getRuleId(),rule);
-            Set<String> keySet = rule.getPatterns().keySet();
-            for (String pattern : keySet) {
-                newPathMap.put(pattern,rule);
-            }
-        }
-        this.ruleMap=newRuleMap;
-        this.pathRuleMap=newPathMap;
+    public void putAllFilterRules(FilterRules filterRules) {
+        ConcurrentHashMap<String, FilterRule> newRuleMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, FilterRule> newPathMap = new ConcurrentHashMap<>();
+        Map<String, FilterRule> rules = filterRules.getRules();
+        rules.forEach((k, v) -> {
+                    newRuleMap.put(k, v);
+                    Set<String> keySet = v.getPatterns().keySet();
+                    for (String pattern : keySet) {
+                        newPathMap.put(pattern, v);
+                    }
+                }
+        );
+        this.ruleMap = newRuleMap;
+        this.pathRuleMap = newPathMap;
     }
 
     public FilterRule getRule(String ruleId) {
         return ruleMap.get(ruleId);
     }
+
     public void removeRule(String ruleId) {
         ruleMap.remove(ruleId);
     }
@@ -139,7 +142,7 @@ public class ServiceAndInstanceManager {
      * @param path
      * @return
      */
-    public FilterRule  getRuleByPath(String path){
+    public FilterRule getRuleByPath(String path) {
         ConcurrentHashMap.KeySetView<String, FilterRule> keySet = pathRuleMap.keySet();
         for (String pattern : keySet) {
             if (PathUtils.isMatch(path, pattern)) {

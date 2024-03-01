@@ -79,7 +79,6 @@ this.queue.add(httpRequestWrapper);
 
             try {
                 log.error("BatchEventListenerProcessor onException 请求写回失败，request:{}, errMsg:{} ", request, ex.getMessage(), ex);
-
                 // 构建响应对象
                 FullHttpResponse fullHttpResponse = ResponseHelper.getHttpResponse(ResponseCode.INTERNAL_ERROR);
 

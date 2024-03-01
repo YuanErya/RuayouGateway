@@ -63,7 +63,6 @@ public class SpringClientRegisterManager extends AbstractRegisterManager impleme
                 service.protocol(),
                 service.patternPath(),
                 super.properties.getEnv(),true);
-
         ServiceInstance serviceInstance = new ServiceInstance();
         String localIp = NetUtils.getLocalIp();
         int port = serverProperties.getPort();

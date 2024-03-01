@@ -10,7 +10,11 @@ public interface ServiceConst {
 
 	int DEFAULT_WEIGHT = 100;
 
-	String DATA_KEY = "meta";
+	String DATA_KEY = "bean";
 
 	String BUFFER_TYPE_PARALLEL ="parallel" ;
+
+	String FLAG_KEY = "flag";
+
+	String FLAG_INFO = "RuayouGateway";
 }

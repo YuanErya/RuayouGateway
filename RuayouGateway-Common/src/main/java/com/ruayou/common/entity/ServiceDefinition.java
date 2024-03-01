@@ -1,14 +1,14 @@
 package com.ruayou.common.entity;
 
-import lombok.Builder;
 import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
  */
-@Builder
 @Data
 public class ServiceDefinition implements Serializable {
 
@@ -38,7 +38,7 @@ public class ServiceDefinition implements Serializable {
 	/**
 	 * 	路径匹配规则：访问真实ANT表达式：定义具体的服务路径的匹配规则
 	 */
-	private String[] patternPath;
+	private List<String> patternPath;
 
 	/**
 	 * 	分组名称
@@ -61,7 +61,7 @@ public class ServiceDefinition implements Serializable {
 		this.serviceId = serviceId;
 		this.version = version;
 		this.protocol = protocol;
-		this.patternPath = patternPath;
+		this.patternPath = Arrays.asList(patternPath);
 		this.group = group;
 		this.enable = enable;
 	}

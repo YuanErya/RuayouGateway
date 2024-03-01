@@ -7,7 +7,7 @@ public class DisruptorConfig {
     private String defaultBufferType = "default";
     private String parallelBufferType = "parallel";
 
-    private int bufferSize = 1024 * 16;
+    private int bufferSize =1024 * 16;
 
     private int processThread = Runtime.getRuntime().availableProcessors();
 

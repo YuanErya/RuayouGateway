@@ -99,6 +99,7 @@ public class ServerContainer implements LifeCycle{
                 log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
+
 //        //订阅路由规则暂时弃用
 //        configCenter.subscribeConfigChange(PatternPathConfig.dataId, new ConfigChangeListener() {
 //            @Override
@@ -108,7 +109,6 @@ public class ServerContainer implements LifeCycle{
 //                log.info("检测到路由规则配置更新：{}",PatternPathConfig.getConfig());
 //            }
 //        });
-
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
 
@@ -149,6 +149,7 @@ public class ServerContainer implements LifeCycle{
                 manager.addServiceInstance(serviceDefinition.getUniqueId(), serviceInstanceSet);
                 //修改发生对应的服务定义
                 manager.putServiceDefinition(serviceDefinition.getUniqueId(),serviceDefinition);
+
             }
         });
         return registerCenter;

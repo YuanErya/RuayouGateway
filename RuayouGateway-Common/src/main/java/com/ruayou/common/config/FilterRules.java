@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author：ruayou
@@ -13,33 +15,45 @@ import java.util.List;
  * @Filename：FilterRules
  */
 public class FilterRules {
-    public static final String dataId="filter-rules";
-
-    private static FilterRules GlobalRules =new FilterRules();
+    public static final String dataId = "filter-rules";
+    private static FilterRules GlobalRules = new FilterRules();
 
     public static FilterRules getGlobalRules() {
         return GlobalRules;
     }
-    public static void updateRules(FilterRules rules){
-        GlobalRules=rules;
+
+    public static void updateRules(FilterRules rules) {
+        GlobalRules = rules;
         ServiceAndInstanceManager.getManager().putAllFilterRules(rules);
     }
-    @Getter@Setter
-    List<FilterRule> rules=new ArrayList<>();
-    public static final FilterRule defaultRule=new FilterRule();
 
+    @Getter
+    @Setter
+    Map<String,FilterRule> rules = new HashMap<>();
 
-    static {
-        defaultRule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
-        defaultRule.setRuleId("default");
-        defaultRule.setOrder(Integer.MAX_VALUE);
-        defaultRule.setRetryConfig(new FilterRule.RetryConfig());
+    private static FilterRule defaultFilterRule;
+
+    /**
+     * 添加默认的路由配置规则
+     * @param map
+     * @return
+     */
+    public static FilterRule getDefaultFilterRule(Map<String, String> map) {
+        if (defaultFilterRule == null) {
+            FilterRule rule = new FilterRule();
+            rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
+            rule.setRuleId("default");
+            rule.setOrder(Integer.MAX_VALUE);
+            rule.setRetryConfig(new FilterRule.RetryConfig());
+            rule.setPatterns(map);
+            defaultFilterRule = rule;
+        }else {
+            defaultFilterRule.getPatterns().putAll(map);
+        }
+        return defaultFilterRule;
     }
-    public static FilterRule getDefaultFilterRule(){
-        return defaultRule;
-    }
 
-    public void addRule(FilterRule rule){
-        rules.add(rule);
+    public void addRule(FilterRule rule) {
+        rules.put(rule.getRuleId(),rule);
     }
 }
