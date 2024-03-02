@@ -38,6 +38,7 @@ public class ServerContainer implements LifeCycle{
     private static NacosConfig nacosConfig=globalConfig.getNacosConfig();
     private HttpProcessor processor;
     boolean initFlag=false;
+    boolean startFlag=false;
 
     private static final  ArrayList<LifeCycle> run=new ArrayList<>();
 
@@ -63,8 +64,6 @@ public class ServerContainer implements LifeCycle{
         if (!initFlag) {
             init();
         }
-        run.forEach(LifeCycle::start);
-        registerAndSubscribe(nacosConfig,nettyServerConfig);
         ConfigCenter configCenter=new NacosConfigCenter();
         configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
@@ -76,6 +75,8 @@ public class ServerContainer implements LifeCycle{
                     log.info("检测到核心组件配置更新：{}",gf);
                     GlobalConfig.saveConfig(gf);
                     updateConfig(gf);
+                    //第一次启动之前不用重启组件。
+                    if(!startFlag)return;
                     //重启配置变更的组件
                     if (!gf.getNettyServerConfig().equals(origin.getNettyServerConfig())) {
                         run.forEach((component)->{
@@ -91,25 +92,18 @@ public class ServerContainer implements LifeCycle{
                 }
             }
         });
-
         configCenter.subscribeConfigChange(FilterRules.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(String configInfo) {
                 FilterRules filterRules=YamlUtils.parseYaml(configInfo, FilterRules.class);
-                FilterRules.updateRules(filterRules);
+                if (filterRules!=null) {
+                    FilterRules.updateRules(filterRules);
+                }
                 log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
-
-//        //订阅路由规则暂时弃用
-//        configCenter.subscribeConfigChange(PatternPathConfig.dataId, new ConfigChangeListener() {
-//            @Override
-//            public void onConfigChange(String configInfo) {
-//                PatternPathConfig patternPathConfig = YamlUtils.parseYaml(configInfo, PatternPathConfig.class);
-//                PatternPathConfig.saveConfig(patternPathConfig);
-//                log.info("检测到路由规则配置更新：{}",PatternPathConfig.getConfig());
-//            }
-//        });
+        registerAndSubscribe(nacosConfig,nettyServerConfig);
+        run.forEach(LifeCycle::start);
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
 
@@ -144,6 +138,10 @@ public class ServerContainer implements LifeCycle{
             @Override
             public void onChange(ServiceDefinition serviceDefinition, Set<ServiceInstance> serviceInstanceSet) {
                 log.info("refresh service and instance: {} {}", serviceDefinition.getServiceId(), serviceInstanceSet);
+                if (serviceDefinition.getServiceId().equals(nacosConfig.getApplicationName())) {
+                    //网关并不需要加入实例
+                    return;
+                }
                 //要做的是把变更的新的获取到的新的实例的列表重新保存
                 ServiceAndInstanceManager manager = ServiceAndInstanceManager.getManager();
                 //将这次变更事件影响之后的服务实例再次添加到对应的服务实例集合

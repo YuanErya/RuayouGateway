@@ -4,6 +4,7 @@ import com.ruayou.common.config.GlobalConfig;
 import com.ruayou.core.LifeCycle;
 import com.ruayou.common.config.NettyServerConfig;
 import com.ruayou.core.netty.handler.HttpServerHandler;
+import com.ruayou.core.netty.handler.NettyServerConnectManagerHandler;
 import com.ruayou.core.netty.processor.HttpProcessor;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -17,6 +18,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -30,10 +32,7 @@ public class NettyHttpServer implements LifeCycle {
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossEventLoopGroup;
 
-    public EventLoopGroup getWorkerEventLoopGroup() {
-        return workerEventLoopGroup;
-    }
-
+    @Getter
     private EventLoopGroup workerEventLoopGroup;
 
     private Channel channel;
@@ -46,8 +45,8 @@ public class NettyHttpServer implements LifeCycle {
 
     @Override
     public void init() {
-        this.bossEventLoopGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("default-netty-boss-nio"));
-        this.workerEventLoopGroup = new NioEventLoopGroup(config.getEventLoopGroupWorkerNum(), new DefaultThreadFactory("default-netty-worker-nio"));
+        this.bossEventLoopGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("netty-boss-nio"));
+        this.workerEventLoopGroup = new NioEventLoopGroup(config.getEventLoopGroupWorkerNum(), new DefaultThreadFactory("netty-worker-nio"));
         this.bootstrap = new ServerBootstrap()
                 .group(bossEventLoopGroup, workerEventLoopGroup)
                 .channel(NioServerSocketChannel.class)
@@ -65,7 +64,8 @@ public class NettyHttpServer implements LifeCycle {
                                 new HttpServerCodec(),//解码出来的请求头和请求体是分离的，下面的处理器能合并完整的请求
                                 new HttpObjectAggregator(config.getMaxContentLength()), // 聚合HTTP请求
                                 new HttpServerExpectContinueHandler(), // 处理HTTP 100 Continue请求
-                                new HttpServerHandler(processor)
+                                new HttpServerHandler(processor),
+                                new NettyServerConnectManagerHandler()
                         );
                     }
                 });

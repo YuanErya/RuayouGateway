@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Log4j2
 public class GatewayFilterChainFactory implements FilterChainFactory{
-
+    private static final Map<String, Filter> processorFilterIdMap = new ConcurrentHashMap<>();
     private static final GatewayFilterChainFactory INSTANCE = new GatewayFilterChainFactory();
 
     public static GatewayFilterChainFactory getFactory(){
@@ -26,11 +26,16 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
     }
 
 
-    private Cache<String, GatewayFilterChain> chainCache = Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+    private final static Cache<String, GatewayFilterChain> chainCache = Caffeine.newBuilder().recordStats().expireAfterWrite(10,
             TimeUnit.MINUTES).build();
 
+    /**
+     * 涉及到过滤规则变更的时候删除缓存
+     */
+    public static void cleanChainCache(){
+        chainCache.invalidateAll();
+    }
 
-    private Map<String, Filter> processorFilterIdMap = new ConcurrentHashMap<>();
 
     private GatewayFilterChainFactory(){
         //加载所有过滤器
@@ -48,12 +53,8 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
             processorFilterIdMap.put(filterId, filter);
         });
     }
-
-    //对规则建立缓存，过滤器链条的复用。
     @Override
     public GatewayFilterChain buildFilterChain(GatewayContext ctx){
-        //return doBuildFilterChain(ctx.getFilterRule());
-        //测试功能临时取消缓存。。后期设计
         return chainCache.get(ctx.getFilterRule().getRuleId(),k->doBuildFilterChain(ctx.getFilterRule()));
     }
 

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ruayou.common.constant.ServiceConst.DEFAULT_VERSION;
+
 /**
  * @Author：ruayou
  * @Date：2024/2/28 21:16
@@ -31,24 +33,36 @@ public class FilterRules {
     @Setter
     Map<String,FilterRule> rules = new HashMap<>();
 
-    private static FilterRule defaultFilterRule;
+    private static  FilterRule defaultFilterRule;
 
     /**
      * 添加默认的路由配置规则
-     * @param map
-     * @return
+     * @param patternsMap
+     * @returnd
      */
-    public static FilterRule getDefaultFilterRule(Map<String, String> map) {
+    public static void updateDefaultFilterRule(Map<String, String> patternsMap) {
         if (defaultFilterRule == null) {
             FilterRule rule = new FilterRule();
             rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
             rule.setRuleId("default");
             rule.setOrder(Integer.MAX_VALUE);
             rule.setRetryConfig(new FilterRule.RetryConfig());
-            rule.setPatterns(map);
+            rule.setPatterns(patternsMap);
             defaultFilterRule = rule;
         }else {
-            defaultFilterRule.getPatterns().putAll(map);
+            defaultFilterRule.getPatterns().putAll(patternsMap);
+        }
+    }
+    public static FilterRule getDefaultFilterRule() {
+        if (defaultFilterRule == null) {
+            FilterRule rule = new FilterRule();
+            rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
+            rule.setRuleId("default");
+            rule.setVersion(DEFAULT_VERSION);
+            rule.setOrder(Integer.MAX_VALUE);
+            rule.setRetryConfig(new FilterRule.RetryConfig());
+            rule.setPatterns(new HashMap<>());
+            defaultFilterRule = rule;
         }
         return defaultFilterRule;
     }

@@ -27,7 +27,6 @@ public class AsyncHttpCoreClient implements LifeCycle {
     private AsyncHttpClient httpClient;
     private  HttpClientConfig config;
     private  EventLoopGroup worker;
-
     public AsyncHttpCoreClient(HttpClientConfig config, EventLoopGroup worker) {
         this.worker = worker;
         this.config = config;

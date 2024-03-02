@@ -21,7 +21,6 @@ public class ServiceAndInstanceManager {
     //	服务的实例集合：uniqueId与一对服务实例对应
     private ConcurrentHashMap<String /* uniqueId */ , Set<ServiceInstance>> serviceInstanceMap = new ConcurrentHashMap<>();
 
-
     private ConcurrentHashMap<String /* ruleId */ , FilterRule> ruleMap = new ConcurrentHashMap<>();
 
     //路径以及规则集合
@@ -37,6 +36,16 @@ public class ServiceAndInstanceManager {
     public void putServiceDefinition(String serviceId,
                                      ServiceDefinition serviceDefinition) {
         serviceDefinitionMap.put(serviceId, serviceDefinition);
+        List<String> patterns = serviceDefinition.getPatternPath();
+        HashMap<String,String> noRulePatterns = new HashMap<>();
+        for (String pattern : patterns) {
+            if (pathRuleMap.containsKey(pattern)) {
+                continue;
+            }
+            noRulePatterns.put(pattern, serviceId);
+            pathRuleMap.put(pattern, FilterRules.getDefaultFilterRule());
+        }
+        FilterRules.updateDefaultFilterRule(noRulePatterns);
     }
 
     public ServiceDefinition getServiceDefinition(String serviceId) {
@@ -53,7 +62,7 @@ public class ServiceAndInstanceManager {
 
     /***************** 	对服务实例缓存进行操作的系列方法 	***************/
 
-    public Set<ServiceInstance> getServiceInstanceByServiceId(String serviceId, boolean gray,String version) {
+    public Set<ServiceInstance> getServiceInstanceByServiceId(String serviceId,boolean gray,String version) {
 
         //待添加缓存
         Set<ServiceInstance> serviceInstances = serviceInstanceMap.get(serviceId);
@@ -142,7 +151,6 @@ public class ServiceAndInstanceManager {
 
     /**
      * 传入路径，模式匹配
-     *
      * @param path
      * @return
      */

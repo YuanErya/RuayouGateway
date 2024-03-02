@@ -34,12 +34,14 @@ public class RequestHelper {
         FilterRule filterRule = ServiceAndInstanceManager.getManager().getRuleByPath(gateWayRequest.getPath());
         Map<String, String> patterns = filterRule.getPatterns();
         String serviceId="";
+        //待加缓存映射id
         for (String pattern : patterns.keySet()) {
             if (PathUtils.isMatch(gateWayRequest.getPath(), pattern)) {
                 serviceId = patterns.get(pattern);
                 break;
             }
         }
+
         ServiceDefinition serviceDefinition =
                 ServiceAndInstanceManager.getManager().getServiceDefinition(serviceId);
         if(serviceDefinition==null){
