@@ -3,13 +3,11 @@ package com.ruayou.common.config;
 import com.ruayou.common.constant.FilterConst;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ruayou.common.constant.ServiceConst.DEFAULT_VERSION;
+import static com.ruayou.common.constant.ServiceConst.*;
 
 /**
  * @Author：ruayou
@@ -31,35 +29,28 @@ public class FilterRules {
 
     @Getter
     @Setter
-    Map<String,FilterRule> rules = new HashMap<>();
+    Map<String, FilterRule> rules = new HashMap<>();
 
-    private static  FilterRule defaultFilterRule;
+    private static FilterRule defaultFilterRule;
 
     /**
      * 添加默认的路由配置规则
+     *
      * @param patternsMap
      * @returnd
      */
     public static void updateDefaultFilterRule(Map<String, String> patternsMap) {
-        if (defaultFilterRule == null) {
-            FilterRule rule = new FilterRule();
-            rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
-            rule.setRuleId("default");
-            rule.setOrder(Integer.MAX_VALUE);
-            rule.setRetryConfig(new FilterRule.RetryConfig());
-            rule.setPatterns(patternsMap);
-            defaultFilterRule = rule;
-        }else {
-            defaultFilterRule.getPatterns().putAll(patternsMap);
-        }
+        defaultFilterRule.getPatterns().putAll(patternsMap);
     }
+
     public static FilterRule getDefaultFilterRule() {
         if (defaultFilterRule == null) {
             FilterRule rule = new FilterRule();
             rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
-            rule.setRuleId("default");
+            rule.setRuleId(DEFAULT_ID);
             rule.setVersion(DEFAULT_VERSION);
             rule.setOrder(Integer.MAX_VALUE);
+            rule.setProtocol(DEFAULT_PROTOCOL);
             rule.setRetryConfig(new FilterRule.RetryConfig());
             rule.setPatterns(new HashMap<>());
             defaultFilterRule = rule;
@@ -68,6 +59,6 @@ public class FilterRules {
     }
 
     public void addRule(FilterRule rule) {
-        rules.put(rule.getRuleId(),rule);
+        rules.put(rule.getRuleId(), rule);
     }
 }

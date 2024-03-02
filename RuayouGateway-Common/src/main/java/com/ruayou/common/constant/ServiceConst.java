@@ -2,7 +2,10 @@ package com.ruayou.common.constant;
 
 public interface ServiceConst {
 
+	String DEFAULT_ID="default";
+
 	String UNIQUE_ID = "uniqueId";
+	String DEFAULT_PROTOCOL="http";
 
 	String DEFAULT_VERSION = "1.0.0";
 

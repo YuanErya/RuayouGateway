@@ -1,12 +1,17 @@
 package com.ruayou.common.config;
-
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.ServiceNotFoundException;
 import com.ruayou.common.utils.PathUtils;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.ruayou.common.constant.ServiceConst.DEFAULT_ID;
+import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
 
 /**
  * @Author：ruayou
@@ -24,10 +29,22 @@ public class ServiceAndInstanceManager {
     private ConcurrentHashMap<String /* ruleId */ , FilterRule> ruleMap = new ConcurrentHashMap<>();
 
     //路径以及规则集合
-    private ConcurrentHashMap<String /* 路径 */ , FilterRule> pathRuleMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String /* 路径 */ , FilterRule> patternRuleMap = new ConcurrentHashMap<>();
+
+    private static final Cache<String,String> ruleIdCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+            TimeUnit.MINUTES).build();
+    private static final Cache<String,Set<ServiceInstance>> instanceSetCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+            TimeUnit.MINUTES).build();
 
     public static ServiceAndInstanceManager getManager() {
         return INSTANCE;
+    }
+
+    public static void cleanRuleIdCache(){
+        ruleIdCache.invalidateAll();
+    }
+    public static void cleanInstanceSetCache(){
+        instanceSetCache.invalidateAll();
     }
 
 
@@ -39,13 +56,14 @@ public class ServiceAndInstanceManager {
         List<String> patterns = serviceDefinition.getPatternPath();
         HashMap<String,String> noRulePatterns = new HashMap<>();
         for (String pattern : patterns) {
-            if (pathRuleMap.containsKey(pattern)) {
+            if (patternRuleMap.containsKey(pattern)) {
                 continue;
             }
             noRulePatterns.put(pattern, serviceId);
-            pathRuleMap.put(pattern, FilterRules.getDefaultFilterRule());
+            patternRuleMap.put(pattern, FilterRules.getDefaultFilterRule());
         }
         FilterRules.updateDefaultFilterRule(noRulePatterns);
+        if(!ruleMap.containsKey(DEFAULT_ID))ruleMap.put(DEFAULT_ID,FilterRules.getDefaultFilterRule());
     }
 
     public ServiceDefinition getServiceDefinition(String serviceId) {
@@ -63,8 +81,10 @@ public class ServiceAndInstanceManager {
     /***************** 	对服务实例缓存进行操作的系列方法 	***************/
 
     public Set<ServiceInstance> getServiceInstanceByServiceId(String serviceId,boolean gray,String version) {
+        return instanceSetCache.get(serviceId+gray+version,k->searchServiceInstance(serviceId,gray,version));
+    }
 
-        //待添加缓存
+    private Set<ServiceInstance> searchServiceInstance(String serviceId,boolean gray,String version){
         Set<ServiceInstance> serviceInstances = serviceInstanceMap.get(serviceId);
         if (serviceInstances == null || serviceInstances.isEmpty()) {
             return Collections.emptySet();
@@ -138,7 +158,7 @@ public class ServiceAndInstanceManager {
                 }
         );
         this.ruleMap = newRuleMap;
-        this.pathRuleMap = newPathMap;
+        this.patternRuleMap = newPathMap;
     }
 
     public FilterRule getRule(String ruleId) {
@@ -150,17 +170,23 @@ public class ServiceAndInstanceManager {
     }
 
     /**
-     * 传入路径，模式匹配
+     * 路径查规则设计缓存机制
      * @param path
      * @return
      */
     public FilterRule getRuleByPath(String path) {
-        ConcurrentHashMap.KeySetView<String, FilterRule> keySet = pathRuleMap.keySet();
+        String ruleId = ruleIdCache.get(path, this::getRuleIDByPath);
+        return ruleMap.get(ruleId);
+    }
+    private String getRuleIDByPath(String path){
+        ConcurrentHashMap.KeySetView<String, FilterRule> keySet = patternRuleMap.keySet();
         for (String pattern : keySet) {
             if (PathUtils.isMatch(path, pattern)) {
-                return pathRuleMap.get(pattern);
+                return patternRuleMap.get(pattern).getRuleId();
             }
         }
-        return pathRuleMap.get(path);
+        //未找到相关的规则，抛异常找不到服务。
+        throw new ServiceNotFoundException(SERVICE_DEFINITION_NOT_FOUND);
     }
+
 }

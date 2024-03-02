@@ -12,6 +12,7 @@ import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.utils.NetUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
+import com.ruayou.core.filter.GatewayFilterChainFactory;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
 import com.ruayou.core.netty.NettyHttpServer;
 import com.ruayou.core.netty.processor.DisruptorHttpServerProcessor;
@@ -99,6 +100,9 @@ public class ServerContainer implements LifeCycle{
                 if (filterRules!=null) {
                     FilterRules.updateRules(filterRules);
                 }
+                //清空规则相关缓存
+                ServiceAndInstanceManager.cleanRuleIdCache();
+                GatewayFilterChainFactory.cleanChainCache();
                 log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
@@ -139,7 +143,7 @@ public class ServerContainer implements LifeCycle{
             public void onChange(ServiceDefinition serviceDefinition, Set<ServiceInstance> serviceInstanceSet) {
                 log.info("refresh service and instance: {} {}", serviceDefinition.getServiceId(), serviceInstanceSet);
                 if (serviceDefinition.getServiceId().equals(nacosConfig.getApplicationName())) {
-                    //网关并不需要加入实例
+                    //网关本体并不需要加入实例
                     return;
                 }
                 //要做的是把变更的新的获取到的新的实例的列表重新保存
@@ -148,6 +152,8 @@ public class ServerContainer implements LifeCycle{
                 manager.addServiceInstance(serviceDefinition.getServiceId(), serviceInstanceSet);
                 //修改发生对应的服务定义
                 manager.putServiceDefinition(serviceDefinition.getServiceId(),serviceDefinition);
+                //清空实例相关缓存
+                ServiceAndInstanceManager.cleanInstanceSetCache();
             }
         });
         return registerCenter;
