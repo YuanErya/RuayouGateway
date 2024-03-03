@@ -6,6 +6,7 @@ import com.ruayou.common.entity.ServiceInstance;
  * @Author：ruayou
  * @Date：2024/2/5 23:17
  * @Filename：LoadBalance
+ * 负载均衡策略
  */
 public interface LoadBalanceStrategy {
 

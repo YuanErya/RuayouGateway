@@ -1,2 +1,3 @@
 com.ruayou.core.filter.loadbalance.LoadBalanceFilter
 com.ruayou.core.filter.router.RouterFilter
+com.ruayou.core.filter.gray.GrayFilter

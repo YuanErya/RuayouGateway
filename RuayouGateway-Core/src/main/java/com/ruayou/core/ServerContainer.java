@@ -13,6 +13,7 @@ import com.ruayou.common.utils.NetUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
 import com.ruayou.core.filter.GatewayFilterChainFactory;
+import com.ruayou.core.helper.RequestHelper;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
 import com.ruayou.core.netty.NettyHttpServer;
 import com.ruayou.core.netty.processor.DisruptorHttpServerProcessor;
@@ -154,6 +155,7 @@ public class ServerContainer implements LifeCycle{
                 manager.putServiceDefinition(serviceDefinition.getServiceId(),serviceDefinition);
                 //清空实例相关缓存
                 ServiceAndInstanceManager.cleanInstanceSetCache();
+                RequestHelper.cleanServiceIdCache();
             }
         });
         return registerCenter;

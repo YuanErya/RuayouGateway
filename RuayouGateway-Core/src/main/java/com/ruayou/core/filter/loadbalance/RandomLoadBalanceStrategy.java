@@ -18,6 +18,7 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
  * @Author：ruayou
  * @Date：2024/2/5 23:18
  * @Filename：RandomLoadBalance
+ * 随机负载均衡
  */
 @Log4j2
 public class RandomLoadBalanceStrategy implements LoadBalanceStrategy {

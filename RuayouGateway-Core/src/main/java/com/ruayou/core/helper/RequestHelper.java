@@ -1,5 +1,7 @@
 package com.ruayou.core.helper;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.ruayou.common.config.FilterRule;
 import com.ruayou.common.config.ServiceAndInstanceManager;
 import com.ruayou.common.constant.CommonConst;
@@ -19,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
 
@@ -29,18 +32,18 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
  */
 public class RequestHelper {
 
+    private static final Cache<String,String> serviceIdCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+            TimeUnit.MINUTES).build();
+    public static void cleanServiceIdCache(){
+        serviceIdCache.invalidateAll();
+    }
+
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);
-        FilterRule filterRule = ServiceAndInstanceManager.getManager().getRuleByPath(gateWayRequest.getPath());
-        Map<String, String> patterns = filterRule.getPatterns();
-        String serviceId="";
-        //待加缓存映射id
-        for (String pattern : patterns.keySet()) {
-            if (PathUtils.isMatch(gateWayRequest.getPath(), pattern)) {
-                serviceId = patterns.get(pattern);
-                break;
-            }
-        }
+        String path=gateWayRequest.getPath();
+        FilterRule filterRule = ServiceAndInstanceManager.getManager().getRuleByPath(path);
+
+        String serviceId=serviceIdCache.get(path, k-> getServiceIdByPath(path,filterRule));
 
         ServiceDefinition serviceDefinition =
                 ServiceAndInstanceManager.getManager().getServiceDefinition(serviceId);
@@ -50,6 +53,17 @@ public class RequestHelper {
         }
         return new GatewayContext(serviceDefinition.getProtocol(), ctx,
                 HttpUtil.isKeepAlive(request), gateWayRequest,serviceId, filterRule, 0);
+    }
+
+    private static String getServiceIdByPath(String path,FilterRule filterRule){
+        Map<String, String> patterns = filterRule.getPatterns();
+        //待加缓存映射id
+        for (String pattern : patterns.keySet()) {
+            if (PathUtils.isMatch(path, pattern)) {
+                return patterns.get(pattern);
+            }
+        }
+        throw new ServiceNotFoundException(SERVICE_DEFINITION_NOT_FOUND);
     }
 
 
@@ -71,7 +85,6 @@ public class RequestHelper {
      */
     private static String getClientIp(ChannelHandlerContext ctx, FullHttpRequest request) {
         String xForwardedValue = request.headers().get(CommonConst.HTTP_FORWARD_SEPARATOR);
-
         String clientIp = null;
         if (StringUtils.isNotEmpty(xForwardedValue)) {
             List<String> values = Arrays.asList(xForwardedValue.split(", "));
