@@ -1,3 +1,6 @@
 com.ruayou.core.filter.loadbalance.LoadBalanceFilter
 com.ruayou.core.filter.router.RouterFilter
 com.ruayou.core.filter.gray.GrayFilter
+com.ruayou.core.filter.mock.MockFilter
+com.ruayou.core.filter.flowcontrol.FlowControlFilter
+com.ruayou.core.filter.auth.AuthFilter

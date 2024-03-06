@@ -50,7 +50,6 @@ public class ServerContainer implements LifeCycle{
             return;
         }
         HttpServerCoreProcessor coreProcessor=new HttpServerCoreProcessor();
-        //后期调整核心处理器
         DisruptorHttpServerProcessor processor=new DisruptorHttpServerProcessor(globalConfig.getDisruptorConfig(),coreProcessor);
         this.processor=processor;
         run.add(processor);

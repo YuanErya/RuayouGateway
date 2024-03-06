@@ -1,11 +1,13 @@
 package com.ruayou.core.filter.loadbalance;
 
+import com.ruayou.common.config.FilterRule;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.exception.InstanceException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.request.GatewayRequest;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
+import io.netty.util.internal.StringUtil;
 import lombok.extern.log4j.Log4j2;
 
 import static com.ruayou.common.constant.FilterConst.*;
@@ -49,6 +51,16 @@ public class LoadBalanceFilter implements Filter {
      * @return
      */
     public LoadBalanceStrategy getLoadBalanceStrategy(GatewayContext ctx) {
-        return RandomLoadBalanceStrategy.getInstance(ctx.getServiceId());
+        String strategy = ctx.getFilterRule().getLoadBalanceConfig().getStrategy();
+        LoadBalanceStrategy strategyInstance = PollingLoadBalanceStrategy.getInstance(ctx.getServiceId());
+        if (!StringUtil.isNullOrEmpty(strategy)) {
+            switch (strategy) {
+                /**
+                 * 方便后期添加策略
+                 */
+                case LOAD_BALANCE_STRATEGY_RANDOM -> strategyInstance=RandomLoadBalanceStrategy.getInstance(ctx.getServiceId());
+            }
+        }
+        return strategyInstance;
     }
 }

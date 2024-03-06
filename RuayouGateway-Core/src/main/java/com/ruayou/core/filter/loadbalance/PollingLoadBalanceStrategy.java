@@ -9,30 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 
-
 /**
  * @Author：ruayou
- * @Date：2024/2/5 23:18
- * @Filename：RandomLoadBalanceStrategy
- * 随机负载均衡
+ * @Date：2024/3/6 22:59
+ * @Filename：PollingLoadBalanceStrategy
+ * 轮询负载均衡策略
  */
 @Log4j2
-public class RandomLoadBalanceStrategy implements LoadBalanceStrategy {
+public class PollingLoadBalanceStrategy implements LoadBalanceStrategy{
+    private final AtomicInteger flag = new AtomicInteger(1);
 
-    //每一个服务走一个负载均衡实例
     private final String serviceId;
-    private static ConcurrentHashMap<String, RandomLoadBalanceStrategy> map = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, PollingLoadBalanceStrategy> map = new ConcurrentHashMap<>();
 
-    public RandomLoadBalanceStrategy(String serviceId) {
+    public PollingLoadBalanceStrategy(String serviceId) {
         this.serviceId = serviceId;
     }
 
     @Override
-    public ServiceInstance choose(String serviceId,String version ,boolean gray) {
+    public ServiceInstance choose(String serviceId, String version, boolean gray) {
         Set<ServiceInstance> serviceInstanceSet =
                 ServiceAndInstanceManager.getManager().getServiceInstanceByServiceId(serviceId,gray,version);
         if (serviceInstanceSet.isEmpty()) {
@@ -40,14 +39,19 @@ public class RandomLoadBalanceStrategy implements LoadBalanceStrategy {
             throw new InstanceException(SERVICE_INSTANCE_NOT_FOUND);
         }
         List<ServiceInstance> instances = new ArrayList<>(serviceInstanceSet);
-        int index = ThreadLocalRandom.current().nextInt(instances.size());//生成的随机整数将落在 0 到 instances.size() - 1（包含）之间。
-        return instances.get(index);
+        if (instances.isEmpty()) {
+            log.warn("No instance available for service:{}", serviceId);
+            throw new InstanceException(SERVICE_INSTANCE_NOT_FOUND);
+        } else {
+            int pos = Math.abs(this.flag.incrementAndGet());
+            return instances.get(pos % instances.size());
+        }
     }
 
-    public static RandomLoadBalanceStrategy getInstance(String serviceId) {
-        RandomLoadBalanceStrategy loadBalanceRule = map.get(serviceId);
+    public static PollingLoadBalanceStrategy getInstance(String serviceId) {
+        PollingLoadBalanceStrategy loadBalanceRule = map.get(serviceId);
         if (loadBalanceRule == null) {
-            loadBalanceRule = new RandomLoadBalanceStrategy(serviceId);
+            loadBalanceRule = new PollingLoadBalanceStrategy(serviceId);
             map.put(serviceId, loadBalanceRule);
         }
         return loadBalanceRule;

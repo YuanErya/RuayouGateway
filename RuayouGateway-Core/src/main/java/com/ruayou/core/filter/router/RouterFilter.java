@@ -2,6 +2,7 @@ package com.ruayou.core.filter.router;
 import com.ruayou.common.enums.ResponseCode;
 import com.ruayou.common.exception.ConnectException;
 import com.ruayou.common.exception.ResponseException;
+import com.ruayou.common.utils.SystemTime;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.response.GatewayResponse;
 import com.ruayou.core.filter.Filter;
@@ -73,7 +74,7 @@ public class RouterFilter implements Filter {
             ctx.written();//设置状态
             ResponseHelper.writeResponse(ctx);
             log.debug("{} {} {} {} {} {}",
-                    System.currentTimeMillis() - ctx.getRequest().getBeginTime(),
+                    SystemTime.currentTimeMillis() - ctx.getRequest().getBeginTime(),
                     ctx.getRequest().getClientIp(),
                     ctx.getRequest().getMethod(),
                     ctx.getRequest().getPath(),

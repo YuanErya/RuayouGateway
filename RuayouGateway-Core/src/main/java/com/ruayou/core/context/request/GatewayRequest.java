@@ -95,9 +95,12 @@ public class GatewayRequest implements IGatewayRequest{
     private String body;
 
 
+    /**
+     * 存储鉴定权限后的解析信息
+     */
     @Setter
     @Getter
-    private long userId;
+    private long rg_auth_key;
 
     /**
      * 请求Cookie
@@ -290,8 +293,8 @@ public class GatewayRequest implements IGatewayRequest{
     @Override
     public Request build() {
         requestBuilder.setUrl(getFinalUrl());
-        //设置用户id 用于下游的服务使用
-        requestBuilder.addHeader("userId", String.valueOf(userId));
+        //设置鉴定权限后的信息用于下游的服务使用
+        requestBuilder.addHeader("rg_auth_key", String.valueOf(rg_auth_key));
         return requestBuilder.build();
     }
 

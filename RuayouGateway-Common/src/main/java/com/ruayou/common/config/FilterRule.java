@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ruayou.common.constant.FilterConst.LOAD_BALANCE_STRATEGY_POLLING;
+
 /**
  * @Author：ruayou
  * @Date：2024/2/4 17:53
@@ -44,8 +46,19 @@ public class FilterRule {
      */
     private List<String> filters;
 
-//    private FlowControlConfig flowControlConfig;
-    private RetryConfig retryConfig;
+    /**
+     * 重试次数配置
+     */
+
+    private RetryConfig retryConfig =new RetryConfig();
+    /**
+     * Mock配置
+     */
+    private MockConfig mockConfig;
+    /**
+     * 负载均衡配置
+     */
+    private LoadBalanceConfig loadBalanceConfig=new LoadBalanceConfig();
 //    private HystrixConfig hystrixConfig;
 
 
@@ -72,7 +85,20 @@ public class FilterRule {
     public static class RetryConfig {
         private int retryCount =2;
     }
+    @Data
+    public static class MockConfig {
+        /**
+         * key:请求方式：路径
+         * value：结果
+         */
+        Map<String,String> MockMap=new HashMap<>();
+    }
 
+    @Data
+    public static class LoadBalanceConfig {
+        //默认负载均衡是轮询
+        private String strategy =LOAD_BALANCE_STRATEGY_POLLING;
+    }
 //    @Data
 //    public static class HystrixConfig {
 //        /**

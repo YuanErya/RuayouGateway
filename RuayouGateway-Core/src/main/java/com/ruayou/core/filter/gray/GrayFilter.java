@@ -18,8 +18,19 @@ import static com.ruayou.common.constant.FilterConst.*;
         name = GRAY_FILTER_NAME,
         order = GRAY_FILTER_ORDER)
 public class GrayFilter implements Filter {
+    public static final String GRAY = "true";
     @Override
     public void doFilter(GatewayContext ctx) throws Exception {
-
+        String gray = ctx.getRequest().getHeaders().get("gray");
+        if (GRAY.equals(gray)) {
+            ctx.setGray(true);
+            return;
+        }
+        String clientIp = ctx.getRequest().getClientIp();
+        int res = clientIp.hashCode() & (1024 - 1);
+        if (res == 1) {
+            ctx.setGray(true);
+        }
     }
+
 }
