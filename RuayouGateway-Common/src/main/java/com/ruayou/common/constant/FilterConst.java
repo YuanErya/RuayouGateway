@@ -45,6 +45,8 @@ public interface FilterConst {
     String FLOW_CTL_FILTER_ID = "flow_ctl_filter";
     String FLOW_CTL_FILTER_NAME = "flow_ctl_filter";
     int FLOW_CTL_FILTER_ORDER = 50;
+    String FLOW_CTL_FILTER_MODE_LOCAL = "local";
+    String FLOW_CTL_FILTER_MODE_CLOUD = "cloud";
 
     String FLOW_CTL_TYPE_PATH = "path";
     String FLOW_CTL_TYPE_SERVICE = "service";
@@ -54,4 +56,9 @@ public interface FilterConst {
 
     String FLOW_CTL_MODEL_DISTRIBUTED = "distributed";
     String FLOW_CTL_MODEL_SINGLETON = "Singleton";
+
+
+    String LIMIT_FILTER_ID = "limit_filter";
+    String LIMIT_FILTER_NAME = "limit_filter";
+    int LIMIT_FILTER_ORDER = 3;
 }

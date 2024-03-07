@@ -1,6 +1,5 @@
 package com.ruayou.core.filter.loadbalance;
 
-import com.ruayou.common.config.FilterRule;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.exception.InstanceException;
 import com.ruayou.core.context.GatewayContext;
@@ -9,10 +8,8 @@ import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import io.netty.util.internal.StringUtil;
 import lombok.extern.log4j.Log4j2;
-
 import static com.ruayou.common.constant.FilterConst.*;
 import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
-
 /**
  * @Author：ruayou
  * @Date：2024/2/5 23:33
@@ -21,8 +18,6 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 @Log4j2
 @GFilter(id = LOAD_BALANCE_FILTER_ID, name = LOAD_BALANCE_FILTER_NAME, order = LOAD_BALANCE_FILTER_ORDER)
 public class LoadBalanceFilter implements Filter {
-
-
     /**
      * 注意ctx.getRequest()的构建时候。
      *
@@ -46,7 +41,6 @@ public class LoadBalanceFilter implements Filter {
     }
     /**
      * 根据配置获取负载均衡器
-     *
      * @param ctx
      * @return
      */

@@ -2,9 +2,7 @@ package com.ruayou.common.config;
 
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.ruayou.common.constant.FilterConst.LOAD_BALANCE_STRATEGY_POLLING;
 
@@ -32,7 +30,7 @@ public class FilterRule {
     /**
      * 生效的服务
      */
-    private List<String> serviceIds;
+    private Set<String> serviceIds;
     /**
      * 路径匹配模式
      */
@@ -44,12 +42,11 @@ public class FilterRule {
     /**
      * 存放需要用到的过滤器的id
      */
-    private List<String> filters;
+    private Set<String> filters;
 
     /**
      * 重试次数配置
      */
-
     private RetryConfig retryConfig =new RetryConfig();
     /**
      * Mock配置
@@ -59,28 +56,36 @@ public class FilterRule {
      * 负载均衡配置
      */
     private LoadBalanceConfig loadBalanceConfig=new LoadBalanceConfig();
-//    private HystrixConfig hystrixConfig;
+    /**
+     * 流量控制
+     */
+    private List<FlowControlConfig> flowControlConfigs = new ArrayList<>();
 
 
-//    @Data
-//    public static class FlowControlConfig {
-//        /**
-//         * 限流类型-可能是path，也可能是IP或者服务
-//         */
-//        private String type;
-//        /**
-//         * 限流对象的值
-//         */
-//        private String value;
-//        /**
-//         * 限流模式-单机还有分布式
-//         */
-//        private String model;
-//        /**
-//         * 限流规则,是一个JSON
-//         */
-//        private String config;
-//    }
+    @Data
+    public static class FlowControlConfig {
+        private String id;
+        /**
+         * 限流类型 path，IP，服务
+         */
+        private String type;
+        /**
+         * 适配的流量控制的serviceIds
+         */
+        private Set<String> serviceIds;
+        /**
+         * 限流模式-分布式（cloud），单机（local）
+         */
+        private String model;
+        /**
+         * 优先级，一般来说细粒度的应当优先级高
+         */
+        private Integer order;
+        /**
+         * map存储限流规则
+         */
+        private Map<String,Integer> flowRule;
+    }
     @Data
     public static class RetryConfig {
         private int retryCount =2;
@@ -99,23 +104,4 @@ public class FilterRule {
         //默认负载均衡是轮询
         private String strategy =LOAD_BALANCE_STRATEGY_POLLING;
     }
-//    @Data
-//    public static class HystrixConfig {
-//        /**
-//         * 熔断降级陆军
-//         */
-//        private String path;
-//        /**
-//         * 超时时间
-//         */
-//        private int timeoutInMilliseconds;
-//        /**
-//         * 核心线程数量
-//         */
-//        private int threadCoreSize;
-//        /**
-//         * 熔断降级响应
-//         */
-//        private String fallbackResponse;
-//    }
 }
