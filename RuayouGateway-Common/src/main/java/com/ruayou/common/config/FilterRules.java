@@ -6,6 +6,7 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.ruayou.common.constant.ServiceConst.*;
 
@@ -40,13 +41,24 @@ public class FilterRules {
      * @returnd
      */
     public static void updateDefaultFilterRule(Map<String, String> patternsMap) {
+        if (defaultFilterRule == null) {
+            FilterRule rule = new FilterRule();
+            rule.setFilters(Set.of(FilterConst.LOAD_BALANCE_FILTER_ID));
+            rule.setRuleId(DEFAULT_ID);
+            rule.setVersion(DEFAULT_VERSION);
+            rule.setOrder(Integer.MAX_VALUE);
+            rule.setProtocol(DEFAULT_PROTOCOL);
+            rule.setRetryConfig(new FilterRule.RetryConfig());
+            rule.setPatterns(new HashMap<>());
+            defaultFilterRule = rule;
+        }
         defaultFilterRule.getPatterns().putAll(patternsMap);
     }
 
     public static FilterRule getDefaultFilterRule() {
         if (defaultFilterRule == null) {
             FilterRule rule = new FilterRule();
-            rule.setFilters(List.of(FilterConst.LOAD_BALANCE_FILTER_ID));
+            rule.setFilters(Set.of(FilterConst.LOAD_BALANCE_FILTER_ID));
             rule.setRuleId(DEFAULT_ID);
             rule.setVersion(DEFAULT_VERSION);
             rule.setOrder(Integer.MAX_VALUE);

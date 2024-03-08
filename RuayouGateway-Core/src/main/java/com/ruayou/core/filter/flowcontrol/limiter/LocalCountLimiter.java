@@ -28,9 +28,16 @@ public class LocalCountLimiter {
 
     public static LocalCountLimiter getServiceInstance(String serviceId, FilterRule.FlowControlConfig flowControlConfig) {
         String key = serviceId+flowControlConfig.getType()+flowControlConfig.getId();
+        return getLocalCountLimiter(serviceId, flowControlConfig, key, serviceLimiterMap);
+    }
+    public static LocalCountLimiter getPathInstance(String serviceId, String path, FilterRule.FlowControlConfig flowControlConfig){
+        String key = serviceId+flowControlConfig.getType()+flowControlConfig.getId()+COLON_SEPARATOR+path;
+        return getLocalCountLimiter(path, flowControlConfig, key, pathLimiterMap);
+    }
+    private static LocalCountLimiter getLocalCountLimiter(String keyword, FilterRule.FlowControlConfig flowControlConfig, String key, ConcurrentHashMap<String, LocalCountLimiter> serviceLimiterMap) {
         LocalCountLimiter countLimiter = serviceLimiterMap.get(key);
         if (countLimiter==null) {
-            Integer permit = flowControlConfig.getFlowRule().get(serviceId);
+            Integer permit = flowControlConfig.getFlowRule().get(keyword);
             if (permit==null) {
                 return null;
             }else{
@@ -40,23 +47,7 @@ public class LocalCountLimiter {
         }
         return countLimiter;
     }
-
     public boolean tryPass(int permits) {
         return rateLimiter.tryAcquire(permits);
-    }
-
-    public static LocalCountLimiter getPathInstance(String serviceId, String path, FilterRule.FlowControlConfig flowControlConfig){
-        String key = serviceId+flowControlConfig.getType()+flowControlConfig.getId()+COLON_SEPARATOR+path;
-        LocalCountLimiter countLimiter = pathLimiterMap.get(key);
-        if (countLimiter==null) {
-            Integer permit = flowControlConfig.getFlowRule().get(path);
-            if (permit==null) {
-                return null;
-            }else{
-                countLimiter = new LocalCountLimiter(permit);
-                pathLimiterMap.putIfAbsent(key,countLimiter);
-            }
-        }
-        return countLimiter;
     }
 }

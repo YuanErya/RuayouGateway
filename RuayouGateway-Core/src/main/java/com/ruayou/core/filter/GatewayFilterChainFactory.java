@@ -71,7 +71,7 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
         //这是由于我们的过滤器链是由我们的规则定义的
         if (rule != null) {
             //获取所有的过滤器
-            List<String> filterIds = rule.getFilters();
+            Set<String> filterIds = rule.getFilters();
             for (String filterId : filterIds) {
                 if (filterId == null) {
                     continue;

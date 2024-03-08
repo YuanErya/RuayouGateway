@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.*;
 
+import static com.ruayou.common.constant.FilterConst.LIMIT_FILTER_TYPE_IP;
 import static com.ruayou.common.constant.FilterConst.LOAD_BALANCE_STRATEGY_POLLING;
 
 /**
@@ -57,6 +58,10 @@ public class FilterRule {
      */
     private LoadBalanceConfig loadBalanceConfig=new LoadBalanceConfig();
     /**
+     * 黑名单配置
+     */
+    private LimitConfig limitConfig;
+    /**
      * 流量控制
      */
     private List<FlowControlConfig> flowControlConfigs = new ArrayList<>();
@@ -97,6 +102,18 @@ public class FilterRule {
          * value：结果
          */
         Map<String,String> MockMap=new HashMap<>();
+    }
+
+    @Data
+    public static class LimitConfig {
+        /**
+         * 默认根据ip段
+         */
+        private String type=LIMIT_FILTER_TYPE_IP;
+        /**
+         * 限制规则
+         */
+        private Set<String> limitRule;
     }
 
     @Data

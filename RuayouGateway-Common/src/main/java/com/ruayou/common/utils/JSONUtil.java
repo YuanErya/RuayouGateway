@@ -41,7 +41,7 @@ public class JSONUtil {
                 .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-        //  dubbo泛化调用去除class字段
+        //  泛化调用去除class字段
         mapper.addMixIn(Object.class, ExcludeFilter.class);
         mapper.setFilterProvider(new SimpleFilterProvider()
                 .addFilter("excludeFilter", SimpleBeanPropertyFilter.serializeAllExcept("class")));

@@ -34,7 +34,7 @@ public class HttpServerCoreProcessor implements HttpProcessor{
             filterChainFactory.buildFilterChain(gatewayContext).doFilters(gatewayContext);
         }
         catch (GatewayException e){
-            log.error("发现异常{}",e.getMessage());
+            log.error("发现异常:{}",e.getMessage());
             FullHttpResponse httpResponse = ResponseHelper.getHttpResponse(e.getCode());
             doWriteAndRelease(ctx, request, httpResponse);
         }

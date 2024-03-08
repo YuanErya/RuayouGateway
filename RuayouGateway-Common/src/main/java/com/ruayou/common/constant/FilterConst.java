@@ -51,14 +51,11 @@ public interface FilterConst {
     String FLOW_CTL_TYPE_PATH = "path";
     String FLOW_CTL_TYPE_SERVICE = "service";
 
-    String FLOW_CTL_LIMIT_DURATION = "duration"; //以秒为单位
-    String FLOW_CTL_LIMIT_PERMITS = "permits"; //允许请求的次数
-
-    String FLOW_CTL_MODEL_DISTRIBUTED = "distributed";
-    String FLOW_CTL_MODEL_SINGLETON = "Singleton";
-
 
     String LIMIT_FILTER_ID = "limit_filter";
     String LIMIT_FILTER_NAME = "limit_filter";
     int LIMIT_FILTER_ORDER = 3;
+
+    String LIMIT_FILTER_TYPE_IP = "ip";
+    String LIMIT_FILTER_TYPE_PROVINCE = "province";
 }

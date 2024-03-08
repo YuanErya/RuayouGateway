@@ -24,7 +24,6 @@ import static com.ruayou.common.constant.FilterConst.*;
         name = MOCK_FILTER_NAME,
         order = MOCK_FILTER_ORDER)
 public class MockFilter implements Filter {
-
     @Override
     public void doFilter(GatewayContext ctx) throws Exception {
         FilterRule.MockConfig mockConfig=ctx.getFilterRule().getMockConfig();
@@ -33,12 +32,12 @@ public class MockFilter implements Filter {
         }
         Map<String,String> mockMap=mockConfig.getMockMap();
         GatewayRequest request=ctx.getRequest();
-        String value = mockMap.get(request.getMethod() + COLON_SEPARATOR + request.getPath());
+        String value = mockMap.get(request.getMethod().name() + COLON_SEPARATOR + request.getPath());
         if (value!=null) {
             ctx.setResponse(GatewayResponse.buildGatewayResponse(value));
             ctx.written();
             ResponseHelper.writeResponse(ctx);
-            log.info("mock {}:{} response{}",request.getMethod(),request.getPath(),value);
+            log.info("mock {}:{} response:{}",request.getMethod(),request.getPath(),value);
             ctx.terminated();//标记结束过滤器链条的执行
         }
     }

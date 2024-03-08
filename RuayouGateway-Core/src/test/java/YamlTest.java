@@ -7,9 +7,7 @@ import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author：ruayou
@@ -44,7 +42,7 @@ public class YamlTest {
     public void testFilterRule(){
         FilterRule filterRule = new FilterRule();
         filterRule.setRuleId("1");
-        ArrayList<String> filters = new ArrayList<>();
+        Set<String> filters = new HashSet<>();
         filters.add("heys");
         filters.add("sad");
         filterRule.setFilters(filters);
@@ -58,7 +56,18 @@ public class YamlTest {
         retryConfig.setRetryCount(3);
         filterRule.setRetryConfig(retryConfig);
         //System.out.println(YamlUtils.toYaml(filterRule));
+        List<FilterRule.FlowControlConfig> configs=new ArrayList<>();
 
+        FilterRule.FlowControlConfig config = new FilterRule.FlowControlConfig();
+        config.setOrder(1);
+        config.setFlowRule(Map.of("key",2,"k2",3));
+        config.setServiceIds(Set.of("asd","2asd"));
+        configs.add(config);
+        filterRule.setFlowControlConfigs(configs);
+        FilterRule.MockConfig mockConfig=new FilterRule.MockConfig();
+        mockConfig.setMockMap(Map.of("/km/asd/asd","nihao "));
+        filterRule.setMockConfig(mockConfig);
+        filterRule.setLoadBalanceConfig(new FilterRule.LoadBalanceConfig());
         FilterRules rules=FilterRules.getGlobalRules();
        // rules.addRule(rules.getDefaultFilterRule());
         rules.addRule(filterRule);
