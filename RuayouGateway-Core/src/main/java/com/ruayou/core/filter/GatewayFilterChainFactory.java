@@ -2,9 +2,10 @@ package com.ruayou.core.filter;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.ruayou.common.config.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.filter.router.RouterFilter;
+import com.ruayou.core.manager.CacheManager;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import java.util.*;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Log4j2
 public class GatewayFilterChainFactory implements FilterChainFactory{
+    private static final String id="GatewayFilterChainFactory";
     private static final Map<String, Filter> processorFilterIdMap = new ConcurrentHashMap<>();
     private static final GatewayFilterChainFactory INSTANCE = new GatewayFilterChainFactory();
 
@@ -26,16 +28,9 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
     }
 
 
-    private final static Cache<String, GatewayFilterChain> chainCache = Caffeine.newBuilder().recordStats().expireAfterWrite(10,
-            TimeUnit.MINUTES).build();
-
-    /**
-     * 涉及到过滤规则变更的时候删除缓存
-     */
-    public static void cleanChainCache(){
-        chainCache.invalidateAll();
-    }
-
+    private final static Cache<String, GatewayFilterChain> chainCache = CacheManager.createCache(CacheManager.FILTER_RULE_CACHE,id);
+//            Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+//            TimeUnit.MINUTES).build();
 
     private GatewayFilterChainFactory(){
         //加载所有过滤器
@@ -71,7 +66,7 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
         //这是由于我们的过滤器链是由我们的规则定义的
         if (rule != null) {
             //获取所有的过滤器
-            Set<String> filterIds = rule.getFilters();
+            List<String> filterIds = rule.getFilters();
             for (String filterId : filterIds) {
                 if (filterId == null) {
                     continue;

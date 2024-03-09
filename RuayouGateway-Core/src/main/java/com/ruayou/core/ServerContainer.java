@@ -13,8 +13,12 @@ import com.ruayou.common.utils.NetUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.config_center.nacosimpl.NacosConfigCenter;
 import com.ruayou.core.filter.GatewayFilterChainFactory;
+import com.ruayou.core.filter.filter_rule.FilterRules;
+import com.ruayou.core.filter.flowcontrol.limiter.LocalCountLimiter;
 import com.ruayou.core.helper.RequestHelper;
 import com.ruayou.core.httpclient.AsyncHttpCoreClient;
+import com.ruayou.core.manager.CacheManager;
+import com.ruayou.core.manager.ServiceAndInstanceManager;
 import com.ruayou.core.netty.NettyHttpServer;
 import com.ruayou.core.netty.processor.DisruptorHttpServerProcessor;
 import com.ruayou.core.netty.processor.HttpProcessor;
@@ -101,8 +105,8 @@ public class ServerContainer implements LifeCycle{
                     FilterRules.updateRules(filterRules);
                 }
                 //清空规则相关缓存
-                ServiceAndInstanceManager.cleanRuleIdCache();
-                GatewayFilterChainFactory.cleanChainCache();
+                CacheManager.cleanAllCache(CacheManager.FILTER_RULE_CACHE);
+                LocalCountLimiter.cleanCache();
                 log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
@@ -153,8 +157,7 @@ public class ServerContainer implements LifeCycle{
                 //修改发生对应的服务定义
                 manager.putServiceDefinition(serviceDefinition.getServiceId(),serviceDefinition);
                 //清空实例相关缓存
-                ServiceAndInstanceManager.cleanInstanceSetCache();
-                RequestHelper.cleanServiceIdCache();
+                CacheManager.cleanAllCache(CacheManager.SERVICE_CACHE);
             }
         });
         return registerCenter;

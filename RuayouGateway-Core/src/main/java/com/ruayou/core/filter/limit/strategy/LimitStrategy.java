@@ -1,7 +1,6 @@
 package com.ruayou.core.filter.limit.strategy;
 
-import com.ruayou.common.config.FilterRule;
-import com.ruayou.core.context.GatewayContext;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 
 /**
  * @Author：ruayou
@@ -10,5 +9,5 @@ import com.ruayou.core.context.GatewayContext;
  */
 public interface LimitStrategy {
 
-    boolean tryPass(String clientIp, FilterRule.LimitConfig config);
+    Boolean tryPass(String clientIp, FilterRule.LimitConfig config);
 }

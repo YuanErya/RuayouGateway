@@ -1,6 +1,6 @@
 package com.ruayou.core.filter.loadbalance;
 
-import com.ruayou.common.config.ServiceAndInstanceManager;
+import com.ruayou.core.manager.ServiceAndInstanceManager;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.exception.InstanceException;
 import lombok.extern.log4j.Log4j2;

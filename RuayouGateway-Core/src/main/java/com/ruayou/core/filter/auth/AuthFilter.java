@@ -12,6 +12,7 @@ import static com.ruayou.common.constant.FilterConst.AUTH_FILTER_NAME;
  * @Author：ruayou
  * @Date：2024/3/6 22:55
  * @Filename：AuthFilter
+ * 感觉鉴权还是要根据具体的业务来实现。
  */
 @GFilter(id= AUTH_FILTER_ID,
         name = AUTH_FILTER_NAME,

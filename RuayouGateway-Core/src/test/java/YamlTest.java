@@ -1,6 +1,6 @@
 
-import com.ruayou.common.config.FilterRule;
-import com.ruayou.common.config.FilterRules;
+import com.ruayou.core.filter.filter_rule.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRules;
 import com.ruayou.common.config.PatternPathConfig;
 import com.ruayou.common.utils.PathUtils;
 import com.ruayou.common.utils.YamlUtils;
@@ -42,7 +42,7 @@ public class YamlTest {
     public void testFilterRule(){
         FilterRule filterRule = new FilterRule();
         filterRule.setRuleId("1");
-        Set<String> filters = new HashSet<>();
+        List<String> filters = new ArrayList<>();
         filters.add("heys");
         filters.add("sad");
         filterRule.setFilters(filters);
@@ -61,7 +61,7 @@ public class YamlTest {
         FilterRule.FlowControlConfig config = new FilterRule.FlowControlConfig();
         config.setOrder(1);
         config.setFlowRule(Map.of("key",2,"k2",3));
-        config.setServiceIds(Set.of("asd","2asd"));
+        config.setServiceIds(List.of("asd","2asd"));
         configs.add(config);
         filterRule.setFlowControlConfigs(configs);
         FilterRule.MockConfig mockConfig=new FilterRule.MockConfig();

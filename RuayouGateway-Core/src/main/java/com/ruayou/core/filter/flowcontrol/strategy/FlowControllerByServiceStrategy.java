@@ -1,6 +1,6 @@
 package com.ruayou.core.filter.flowcontrol.strategy;
 
-import com.ruayou.common.config.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.common.enums.ResponseCode;
 import com.ruayou.common.exception.LimitedException;
 import com.ruayou.core.context.GatewayContext;
@@ -26,4 +26,6 @@ public class FlowControllerByServiceStrategy implements FlowControlStrategy{
             //云端流控。打算基于redis实现
         }
     }
+
+
 }

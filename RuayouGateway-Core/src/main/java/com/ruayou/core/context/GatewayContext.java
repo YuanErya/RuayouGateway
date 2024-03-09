@@ -1,6 +1,6 @@
 package com.ruayou.core.context;
 
-import com.ruayou.common.config.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.context.request.GatewayRequest;
 import com.ruayou.core.context.response.GatewayResponse;
 import io.netty.channel.ChannelHandlerContext;

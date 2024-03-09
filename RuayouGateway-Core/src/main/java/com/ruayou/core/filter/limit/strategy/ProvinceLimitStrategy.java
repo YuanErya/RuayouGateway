@@ -1,7 +1,6 @@
 package com.ruayou.core.filter.limit.strategy;
 
-import com.ruayou.common.config.FilterRule;
-import com.ruayou.core.context.GatewayContext;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -14,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ProvinceLimitStrategy implements LimitStrategy{
     @Override
-    public boolean tryPass(String clientIp, FilterRule.LimitConfig config) {
+    public Boolean tryPass(String clientIp, FilterRule.LimitConfig config) {
         return false;
     }
 }

@@ -7,5 +7,5 @@ package com.ruayou.core.filter.flowcontrol.limiter;
  * @Filename：Limiter
  */
 public interface Limiter {
-    boolean tryPass();
+    boolean tryPass(int permits);
 }

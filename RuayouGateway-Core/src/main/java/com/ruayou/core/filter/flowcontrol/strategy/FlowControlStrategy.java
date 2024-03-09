@@ -1,6 +1,6 @@
 package com.ruayou.core.filter.flowcontrol.strategy;
 
-import com.ruayou.common.config.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.context.GatewayContext;
 
 /**

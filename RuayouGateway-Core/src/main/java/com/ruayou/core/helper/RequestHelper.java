@@ -2,10 +2,10 @@ package com.ruayou.core.helper;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.ruayou.common.config.FilterRule;
-import com.ruayou.common.config.ServiceAndInstanceManager;
+import com.ruayou.core.filter.filter_rule.FilterRule;
+import com.ruayou.core.manager.CacheManager;
+import com.ruayou.core.manager.ServiceAndInstanceManager;
 import com.ruayou.common.constant.CommonConst;
-import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.exception.ServiceNotFoundException;
 import com.ruayou.common.utils.PathUtils;
@@ -32,11 +32,9 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
  */
 public class RequestHelper {
 
-    private static final Cache<String,String> serviceIdCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
-            TimeUnit.MINUTES).build();
-    public static void cleanServiceIdCache(){
-        serviceIdCache.invalidateAll();
-    }
+    private static final Cache<String,String> serviceIdCache= CacheManager.createCache(CacheManager.SERVICE_CACHE,"serviceIdCache");
+//            Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+//            TimeUnit.MINUTES).build();
 
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);

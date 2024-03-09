@@ -1,6 +1,8 @@
-package com.ruayou.common.config;
+package com.ruayou.core.manager;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.ruayou.core.filter.filter_rule.FilterRule;
+import com.ruayou.core.filter.filter_rule.FilterRules;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.exception.ServiceNotFoundException;
@@ -31,22 +33,16 @@ public class ServiceAndInstanceManager {
     //路径以及规则集合
     private ConcurrentHashMap<String /* 路径 */ , FilterRule> patternRuleMap = new ConcurrentHashMap<>();
 
-    private static final Cache<String,String> ruleIdCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
-            TimeUnit.MINUTES).build();
-    private static final Cache<String,Set<ServiceInstance>> instanceSetCache= Caffeine.newBuilder().recordStats().expireAfterWrite(10,
-            TimeUnit.MINUTES).build();
+    private static final Cache<String,String> ruleIdCache= CacheManager.createCache(CacheManager.FILTER_RULE_CACHE,"ruleIdCache");
+//            Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+//            TimeUnit.MINUTES).build();
+    private static final Cache<String,Set<ServiceInstance>> instanceSetCache= CacheManager.createCache(CacheManager.SERVICE_CACHE,"instanceSetCache");
+//        Caffeine.newBuilder().recordStats().expireAfterWrite(10,
+//            TimeUnit.MINUTES).build();
 
     public static ServiceAndInstanceManager getManager() {
         return INSTANCE;
     }
-
-    public static void cleanRuleIdCache(){
-        ruleIdCache.invalidateAll();
-    }
-    public static void cleanInstanceSetCache(){
-        instanceSetCache.invalidateAll();
-    }
-
 
     /***************** 	对服务定义缓存进行操作的系列方法 	***************/
 

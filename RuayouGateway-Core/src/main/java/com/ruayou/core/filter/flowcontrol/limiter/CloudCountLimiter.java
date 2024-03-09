@@ -8,7 +8,7 @@ package com.ruayou.core.filter.flowcontrol.limiter;
 public class CloudCountLimiter implements Limiter{
 
     @Override
-    public boolean tryPass() {
+    public boolean tryPass(int permits) {
         return true;
     }
 }

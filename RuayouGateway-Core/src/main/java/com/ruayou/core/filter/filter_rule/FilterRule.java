@@ -1,4 +1,4 @@
-package com.ruayou.common.config;
+package com.ruayou.core.filter.filter_rule;
 
 import lombok.Data;
 
@@ -31,7 +31,7 @@ public class FilterRule {
     /**
      * 生效的服务
      */
-    private Set<String> serviceIds;
+    private List<String> serviceIds;
     /**
      * 路径匹配模式
      */
@@ -43,7 +43,7 @@ public class FilterRule {
     /**
      * 存放需要用到的过滤器的id
      */
-    private Set<String> filters;
+    private List<String> filters;
 
     /**
      * 重试次数配置
@@ -77,7 +77,7 @@ public class FilterRule {
         /**
          * 适配的流量控制的serviceIds
          */
-        private Set<String> serviceIds;
+        private List<String> serviceIds;
         /**
          * 限流模式-分布式（cloud），单机（local）
          */
@@ -113,7 +113,7 @@ public class FilterRule {
         /**
          * 限制规则
          */
-        private Set<String> limitRule;
+        private List<String> limitRule;
     }
 
     @Data
