@@ -11,4 +11,7 @@ import com.ruayou.core.context.GatewayContext;
 public interface FlowControlStrategy {
 
     void doFlowControl(GatewayContext ctx, FilterRule.FlowControlConfig flowControlConfig);
+
+    boolean isFit(String type);
+
 }

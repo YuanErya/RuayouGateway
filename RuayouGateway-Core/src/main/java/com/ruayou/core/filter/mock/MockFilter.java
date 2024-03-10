@@ -37,7 +37,7 @@ public class MockFilter implements Filter {
             ctx.setResponse(GatewayResponse.buildGatewayResponse(value));
             ctx.written();
             ResponseHelper.writeResponse(ctx);
-            log.info("mock {}:{} response:{}",request.getMethod(),request.getPath(),value);
+            log.debug("mock {}:{} response:{}",request.getMethod(),request.getPath(),value);
             ctx.terminated();//标记结束过滤器链条的执行
         }
     }

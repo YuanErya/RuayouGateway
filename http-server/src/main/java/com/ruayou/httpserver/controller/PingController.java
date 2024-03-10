@@ -4,7 +4,6 @@ import com.ruayou.client.annotation.RGService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 /**
  * @Author：ruayou
  * @Date：2024/2/29 12:53
@@ -29,10 +28,9 @@ public class PingController {
     }
 
     @PostMapping("/ping/mb/nb")
-    public static String pingMBNB(){
+    public  String pingMBNB(){
         ++count;
         System.out.println("pong-nb-HttpServer"+count);
         return "pong-mbnb-HttpServer";
     }
-
 }

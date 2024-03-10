@@ -9,8 +9,6 @@ import com.ruayou.common.entity.ServiceInstance;
  * 负载均衡策略
  */
 public interface LoadBalanceStrategy {
-
-
     /**
      * 通过服务ID拿到对应的服务实例
      * @param serviceId
@@ -18,4 +16,9 @@ public interface LoadBalanceStrategy {
      * @return
      */
     ServiceInstance choose(String serviceId,String version,boolean gray);
+
+
+    boolean ifFit(String type);
+
+    LoadBalanceStrategy getInstance(String serviceKey);
 }

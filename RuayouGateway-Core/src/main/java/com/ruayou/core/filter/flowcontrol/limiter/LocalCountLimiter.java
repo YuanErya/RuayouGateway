@@ -1,6 +1,7 @@
 package com.ruayou.core.filter.flowcontrol.limiter;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.ruayou.common.constant.FilterConst;
 import com.ruayou.core.filter.filter_rule.FilterRule;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +22,7 @@ public class LocalCountLimiter implements Limiter {
 
     public static final ConcurrentHashMap<String, LocalCountLimiter> serviceLimiterMap = new ConcurrentHashMap<>();
 
+    public LocalCountLimiter(){};
     public LocalCountLimiter(double maxPermits) {
         this.maxPermits = maxPermits;
         rateLimiter = RateLimiter.create(maxPermits);
@@ -53,6 +55,11 @@ public class LocalCountLimiter implements Limiter {
     @Override
     public boolean tryPass(int permits) {
         return rateLimiter.tryAcquire(permits);
+    }
+
+    @Override
+    public boolean isFit(String type) {
+        return FilterConst.FLOW_CTL_FILTER_MODE_LOCAL.equals(type);
     }
 
     public static void cleanCache() {

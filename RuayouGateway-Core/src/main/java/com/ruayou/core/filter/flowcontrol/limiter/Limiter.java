@@ -8,4 +8,6 @@ package com.ruayou.core.filter.flowcontrol.limiter;
  */
 public interface Limiter {
     boolean tryPass(int permits);
+
+    boolean isFit(String type);
 }

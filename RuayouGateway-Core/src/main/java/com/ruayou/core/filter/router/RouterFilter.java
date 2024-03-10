@@ -47,8 +47,6 @@ public class RouterFilter implements Filter {
         int retryCount =ctx.getFilterRule().getRetryConfig().getRetryCount();
         if ((throwable instanceof TimeoutException || throwable instanceof IOException) && currentRetryCount <= retryCount)
         {
-            //&& !hystrixConfig.isPresent()
-            //请求重试
             doRetry(ctx, currentRetryCount);
             return;
         }

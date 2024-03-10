@@ -1,0 +1,2 @@
+com.ruayou.core.filter.loadbalance.PollingLoadBalanceStrategy
+com.ruayou.core.filter.loadbalance.RandomLoadBalanceStrategy

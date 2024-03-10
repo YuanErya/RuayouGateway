@@ -8,7 +8,11 @@ import com.ruayou.core.filter.GFilter;
 import com.ruayou.core.filter.flowcontrol.strategy.FlowControlStrategy;
 import com.ruayou.core.filter.flowcontrol.strategy.FlowControllerByPathStrategy;
 import com.ruayou.core.filter.flowcontrol.strategy.FlowControllerByServiceStrategy;
+
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
+
 import static com.ruayou.common.constant.FilterConst.*;
 
 /**
@@ -31,18 +35,19 @@ public class FlowControlFilter implements Filter {
             }
             if (flowControlConfig.getServiceIds().contains(serviceId)) {
                 String type = flowControlConfig.getType();
-                if (FilterConst.FLOW_CTL_TYPE_PATH.equals(type)) {
-                    strategy = new FlowControllerByPathStrategy();
-                } else if (FLOW_CTL_TYPE_SERVICE.equals(type)) {
-                    strategy = new FlowControllerByServiceStrategy();
+                ServiceLoader<FlowControlStrategy> serviceLoader = ServiceLoader.load(FlowControlStrategy.class);
+                for (FlowControlStrategy flowControlStrategy : serviceLoader) {
+                    strategy = flowControlStrategy;
+                    if (strategy.isFit(type)) {
+                        strategy.doFlowControl(ctx, flowControlConfig);
+                        break;
+                    }
+                    strategy=null;
                 }
                 if (strategy!=null) {
-                    strategy.doFlowControl(ctx,flowControlConfig);
                     break;
                 }
             }
         }
     }
-
-
 }

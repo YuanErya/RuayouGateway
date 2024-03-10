@@ -1,5 +1,6 @@
 package com.ruayou.core.filter.flowcontrol.strategy;
 
+import com.ruayou.common.constant.FilterConst;
 import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.common.enums.ResponseCode;
 import com.ruayou.common.exception.LimitedException;
@@ -27,6 +28,10 @@ public class FlowControllerByServiceStrategy implements FlowControlStrategy{
         } else if (FLOW_CTL_FILTER_MODE_CLOUD.equals(model)) {
             //云端流控。打算基于redis实现
         }
+    }
+    @Override
+    public boolean isFit(String type) {
+        return FilterConst.FLOW_CTL_TYPE_SERVICE.equals(type);
     }
 
 

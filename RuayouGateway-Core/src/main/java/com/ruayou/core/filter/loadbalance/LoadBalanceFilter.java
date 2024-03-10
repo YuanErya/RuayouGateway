@@ -1,6 +1,8 @@
 package com.ruayou.core.filter.loadbalance;
 
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.enums.ResponseCode;
+import com.ruayou.common.exception.GatewayException;
 import com.ruayou.common.exception.InstanceException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.request.GatewayRequest;
@@ -8,6 +10,10 @@ import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import io.netty.util.internal.StringUtil;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
+
 import static com.ruayou.common.constant.FilterConst.*;
 import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 /**
@@ -20,7 +26,6 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
 public class LoadBalanceFilter implements Filter {
     /**
      * 注意ctx.getRequest()的构建时候。
-     *
      * @param ctx
      * @throws Exception
      */
@@ -45,16 +50,15 @@ public class LoadBalanceFilter implements Filter {
      * @return
      */
     public LoadBalanceStrategy getLoadBalanceStrategy(GatewayContext ctx) {
-        String strategy = ctx.getFilterRule().getLoadBalanceConfig().getStrategy();
-        LoadBalanceStrategy strategyInstance = PollingLoadBalanceStrategy.getInstance(ctx.getServiceId());
-        if (!StringUtil.isNullOrEmpty(strategy)) {
-            switch (strategy) {
-                /**
-                 * 方便后期添加策略
-                 */
-                case LOAD_BALANCE_STRATEGY_RANDOM -> strategyInstance=RandomLoadBalanceStrategy.getInstance(ctx.getServiceId());
+        ServiceLoader<LoadBalanceStrategy> serviceLoader = ServiceLoader.load(LoadBalanceStrategy.class);
+        Iterator<LoadBalanceStrategy> iterator = serviceLoader.iterator();
+        String type=ctx.getFilterRule().getLoadBalanceConfig().getStrategy();
+        while (iterator.hasNext()) {
+            LoadBalanceStrategy strategy = iterator.next();
+            if (strategy.ifFit(type) ){
+                return strategy.getInstance(ctx.getServiceId()+type);
             }
         }
-        return strategyInstance;
+        throw new GatewayException("负载均衡模式配置异常！",ResponseCode.INTERNAL_ERROR);
     }
 }

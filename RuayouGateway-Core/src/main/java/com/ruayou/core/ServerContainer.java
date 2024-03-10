@@ -26,6 +26,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -67,7 +68,11 @@ public class ServerContainer implements LifeCycle{
         if (!initFlag) {
             init();
         }
-        ConfigCenter configCenter=new NacosConfigCenter();
+        ServiceLoader<ConfigCenter> serviceLoader = ServiceLoader.load(ConfigCenter.class);
+        final ConfigCenter configCenter = serviceLoader.findFirst().orElseThrow(() -> {
+            log.error("ConfigCenter impl load fail");
+            return new RuntimeException("ConfigCenter impl load fail");
+        });
         configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
             @Override
@@ -132,7 +137,11 @@ public class ServerContainer implements LifeCycle{
     }
 
     private static RegisterCenter registerAndSubscribe(NacosConfig nacosConfig,NettyServerConfig nettyServerConfig) {
-        final RegisterCenter registerCenter = new NacosRegisterCenter();
+        ServiceLoader<RegisterCenter> serviceLoader = ServiceLoader.load(RegisterCenter.class);
+        final RegisterCenter registerCenter = serviceLoader.findFirst().orElseThrow(() -> {
+            log.error("Register impl load fail");
+            return new RuntimeException("Register impl load fail");
+        });
         registerCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
         //构造网关服务定义和服务实例
         ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(nacosConfig);
