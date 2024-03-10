@@ -31,7 +31,8 @@ public class CacheManager {
     }
 
     /**
-     * 清空分组所有缓存记录
+     *
+     * @param group 分组标志 FILTER_RULE_CACHE ；SERVICE_CACHE
      */
     public static void cleanAllCache(String group){
         cacheMap.get(group).forEach((k,v)->{

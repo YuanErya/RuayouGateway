@@ -11,10 +11,12 @@
 
     <modules>
         <module>RuayouGateway-Core</module>
-        <module>RuayouGateway-Nacos-Register-Center</module>
         <module>RuayouGateway-Common</module>
-        <module>RuayouGateway-Nacos-Config-Center</module>
         <module>RuayouGateway-Client</module>
+        <module>RuayouGateway-Config-Center</module>
+        <module>RuayouGateway-Config-Center/RuayouGateway-Nacos-Config-Center-Impl</module>
+        <module>RuayouGateway-Register-Center</module>
+        <module>RuayouGateway-Register-Center/RuayouGateway-Nacos-Register-Center-Impl</module>
     </modules>
 
     <properties>

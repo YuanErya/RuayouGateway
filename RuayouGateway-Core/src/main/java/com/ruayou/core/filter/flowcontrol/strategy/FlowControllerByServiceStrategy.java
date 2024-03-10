@@ -19,7 +19,9 @@ public class FlowControllerByServiceStrategy implements FlowControlStrategy{
         String model = flowControlConfig.getModel();
         if (FLOW_CTL_FILTER_MODE_LOCAL.equals(model)) {
             LocalCountLimiter limiter = LocalCountLimiter.getServiceInstance(ctx.getServiceId(), flowControlConfig);
-            if (limiter==null||!limiter.tryPass(1)) {
+            if (limiter==null){
+                return;
+            }else if(!limiter.tryPass(1)){
                 throw  new LimitedException(ResponseCode.FLOW_CONTROL_ERROR);
             }
         } else if (FLOW_CTL_FILTER_MODE_CLOUD.equals(model)) {

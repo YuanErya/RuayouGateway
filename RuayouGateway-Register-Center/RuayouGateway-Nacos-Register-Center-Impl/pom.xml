@@ -7,45 +7,27 @@
         <groupId>com.ruayou</groupId>
         <artifactId>RuayouGateway</artifactId>
         <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>RuayouGateway-Core</artifactId>
+    <artifactId>RuayouGateway-Nacos-Register-Center-Impl</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <caffeine.version>3.1.5</caffeine.version>
-        <disruptor.version>3.3.6</disruptor.version>
+        <nacos-client.version>2.2.1</nacos-client.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos-client.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Common</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ruayou</groupId>
-            <artifactId>RuayouGateway-Nacos-Register-Center-Impl</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ruayou</groupId>
-            <artifactId>RuayouGateway-Nacos-Config-Center-Impl</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>${caffeine.version}</version>
-        </dependency>
-
-        <!-- 无锁队列做异步 -->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>${disruptor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>

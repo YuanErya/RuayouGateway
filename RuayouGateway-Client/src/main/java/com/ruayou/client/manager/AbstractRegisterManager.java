@@ -1,9 +1,9 @@
 package com.ruayou.client.manager;
 
 import com.ruayou.client.AutoRegisterProperties;
-import com.ruayou.common.api_interface.register_center.RegisterCenter;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.registercenter.api.RegisterCenter;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
