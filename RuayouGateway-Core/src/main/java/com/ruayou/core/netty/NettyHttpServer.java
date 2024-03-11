@@ -11,6 +11,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -28,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 public class NettyHttpServer implements LifeCycle {
+    public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private NettyServerConfig config;
     private ServerBootstrap bootstrap;
     private EventLoopGroup bossEventLoopGroup;
@@ -45,8 +48,16 @@ public class NettyHttpServer implements LifeCycle {
 
     @Override
     public void init() {
-        this.bossEventLoopGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("netty-boss-nio"));
-        this.workerEventLoopGroup = new NioEventLoopGroup(config.getEventLoopGroupWorkerNum(), new DefaultThreadFactory("netty-worker-nio"));
+        //是否使用Epoll模型
+        if (useEpoll()) {
+            this.bossEventLoopGroup = new EpollEventLoopGroup(1,
+                    new DefaultThreadFactory("epoll-netty-boss-nio"));
+            this.workerEventLoopGroup = new EpollEventLoopGroup(config.getEventLoopGroupWorkerNum(),
+                    new DefaultThreadFactory("epoll-netty-worker-nio"));
+        } else {
+            this.bossEventLoopGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("netty-boss-nio"));
+            this.workerEventLoopGroup = new NioEventLoopGroup(config.getEventLoopGroupWorkerNum(), new DefaultThreadFactory("netty-worker-nio"));
+        }
         this.bootstrap = new ServerBootstrap()
                 .group(bossEventLoopGroup, workerEventLoopGroup)
                 .channel(NioServerSocketChannel.class)
@@ -70,7 +81,9 @@ public class NettyHttpServer implements LifeCycle {
                     }
                 });
     }
-
+    public boolean useEpoll() {
+        return OS_NAME.contains("linux") && Epoll.isAvailable();
+    }
     @Override
     public void start() {
         try {
