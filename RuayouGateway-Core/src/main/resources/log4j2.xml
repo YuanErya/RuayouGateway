@@ -44,13 +44,13 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="com.ruayou.core.filter.router.RouterFilter" level="DEBUG" includeLocation="true">
+        <Logger name="com.ruayou.core.filter.router.RouterFilter" level="INFO" includeLocation="true">
             <AppenderRef ref="AccessLogFile"/>
         </Logger>
-        <Logger name="com.ruayou.core" level="DEBUG" includeLocation="true">
+        <Logger name="com.ruayou.core" level="INFO" includeLocation="true">
             <Appender-Ref ref="CONSOLE"/>
         </Logger>
-        <Root level="DEBUG">
+        <Root level="INFO">
             <AppenderRef ref="RandomAccessFile"/>
         </Root>
     </Loggers>

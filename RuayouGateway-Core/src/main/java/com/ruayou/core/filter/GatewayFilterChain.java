@@ -44,7 +44,6 @@ public class GatewayFilterChain {
                 }
             }
         }catch (Exception e){
-            log.error("执行过滤器发生异常,异常信息：{}",e.getMessage());
             throw e;
         }
         return ctx;

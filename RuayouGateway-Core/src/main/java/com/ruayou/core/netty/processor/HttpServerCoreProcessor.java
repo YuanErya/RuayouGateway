@@ -2,7 +2,7 @@ package com.ruayou.core.netty.processor;
 
 import com.ruayou.common.enums.ResponseCode;
 import com.ruayou.common.exception.GatewayException;
-import com.ruayou.common.exception.ServiceNotFoundException;
+import com.ruayou.common.exception.LimitedException;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.context.HttpRequestWrapper;
 import com.ruayou.core.filter.FilterChainFactory;
@@ -29,9 +29,13 @@ public class HttpServerCoreProcessor implements HttpProcessor{
         log.debug("processing request {}",httpRequestWrapper.getRequest());
         FullHttpRequest request = httpRequestWrapper.getRequest();
         ChannelHandlerContext ctx = httpRequestWrapper.getCtx();
+        GatewayContext gatewayContext=null;
         try{
-            GatewayContext gatewayContext = RequestHelper.buildContext(request, ctx);
+            gatewayContext = RequestHelper.buildContext(request, ctx);
             filterChainFactory.buildFilterChain(gatewayContext).doFilters(gatewayContext);
+        }
+        catch(LimitedException  e){
+            log.debug(e.getCode().getMessage()+" 请求来自：{}",gatewayContext.getRequest().getClientIp());
         }
         catch (GatewayException e){
             log.error("发现异常:{}",e.getMessage());
@@ -46,12 +50,10 @@ public class HttpServerCoreProcessor implements HttpProcessor{
         }
 
     }
-
     @Override
     public void init() {
 
     }
-
     @Override
     public void start() {
 
@@ -66,7 +68,6 @@ public class HttpServerCoreProcessor implements HttpProcessor{
     public void restart() {
 
     }
-
 
     private void doWriteAndRelease(ChannelHandlerContext ctx, FullHttpRequest request, FullHttpResponse httpResponse) {
         ctx.writeAndFlush(httpResponse)
