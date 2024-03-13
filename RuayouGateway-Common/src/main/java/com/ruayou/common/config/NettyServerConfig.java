@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 public class NettyServerConfig implements Config {
-    private int eventLoopGroupWorkerNum = 32;
+    private int eventLoopGroupWorkerNum = 16;
     private int port = 8999;
     private int maxContentLength = 64 * 1024 * 1024;
 }

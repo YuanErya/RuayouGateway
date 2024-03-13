@@ -2,7 +2,7 @@ server:
   port: 8081
 
 register:
-  address: 127.0.0.1:8848
+  address: 192.168.8.111:8848
   env: dev
   gray: false
 

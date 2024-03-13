@@ -1,4 +1,5 @@
 
+import com.ruayou.common.utils.NetUtils;
 import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.filter.filter_rule.FilterRules;
 import com.ruayou.common.utils.PathUtils;
@@ -6,6 +7,10 @@ import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -15,6 +20,10 @@ import java.util.*;
  */
 public class YamlTest {
 
+    @Test
+    public void testIP() throws UnknownHostException {
+        System.out.println(NetUtils.getLocalIp());
+    }
 
     @Test
     public void testConfig(){

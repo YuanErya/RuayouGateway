@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class NetUtils {
 
     public static String getLocalIp() {
-        return getLocalIp("*>10>172>192>127");
+        return getLocalIp("*>10>192>172>127");
     }
 
     public static String getLocalIp(String ipPreference) {
@@ -33,6 +33,8 @@ public class NetUtils {
                 if(ni.isLoopback() || ni.isVirtual()) {
                     continue;
                 }
+                String displayName = ni.getDisplayName().toLowerCase();
+                if(displayName.startsWith("v")||displayName.contains("virtual")||displayName.contains("docker"))continue;
                 Enumeration<InetAddress> en = ni.getInetAddresses();
                 // 	跳过虚拟网卡
                 while (en.hasMoreElements()) {
