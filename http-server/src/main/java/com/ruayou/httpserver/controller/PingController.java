@@ -29,8 +29,8 @@ public class PingController {
 
     @PostMapping("/ping/mb/nb")
     public  String pingMBNB(){
-        ++count;
-        System.out.println("pong-nb-HttpServer"+count);
+//        ++count;
+//        System.out.println("pong-nb-HttpServer"+count);
         return "pong-mbnb-HttpServer";
     }
 }

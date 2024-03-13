@@ -1,7 +1,6 @@
 
 import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.filter.filter_rule.FilterRules;
-import com.ruayou.common.config.PatternPathConfig;
 import com.ruayou.common.utils.PathUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
@@ -15,14 +14,7 @@ import java.util.*;
  * @Filename：YamlTest
  */
 public class YamlTest {
-    @Test
-    public void testYaml(){
-        HashMap<String, String> pattern = PatternPathConfig.getConfig().getPattern();
-        pattern.put("/user/*","user");
-        pattern.put("/user2/*","user2");
-        pattern.put("/use3r/*","user3");
-        System.out.println(YamlUtils.toYaml(PatternPathConfig.getConfig()));
-    }
+
 
     @Test
     public void testConfig(){
