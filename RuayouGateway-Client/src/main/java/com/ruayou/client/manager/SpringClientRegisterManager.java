@@ -57,6 +57,8 @@ public class SpringClientRegisterManager extends AbstractRegisterManager impleme
         List<RGService> beans = scanner.getBeansWithRGServiceAnnotation(applicationContext);
         if (beans.size()>1) {
             throw new RuntimeException("The annotation @RGService can only be used to mark a single location.");
+        } else if (beans.isEmpty()) {
+            throw new RuntimeException("Not find annotation @RGService.");
         }
         RGService service = beans.get(0);
         ServiceDefinition serviceDefinition = new ServiceDefinition(
