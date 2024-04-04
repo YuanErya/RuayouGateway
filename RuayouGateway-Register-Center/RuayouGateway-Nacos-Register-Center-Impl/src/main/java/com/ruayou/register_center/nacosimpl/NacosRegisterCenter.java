@@ -19,7 +19,8 @@ import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  * @Date：2024/1/28 19:56
  * @Filename：NacosRegisterCenter
  */
-@Log4j2
+@Slf4j
 public class NacosRegisterCenter implements RegisterCenter {
 
     /**

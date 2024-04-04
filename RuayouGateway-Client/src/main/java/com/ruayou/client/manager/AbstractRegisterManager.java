@@ -14,7 +14,7 @@ import java.util.ServiceLoader;
  * @Date：2024/2/21 16:42
  * @Filename：ClientRegisterManager
  */
-@Log4j2
+@Slf4j
 public abstract class AbstractRegisterManager {
 
     @Getter

@@ -22,6 +22,8 @@ import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -32,7 +34,7 @@ import java.util.Set;
  * @Date：2024/1/26 19:04
  * @Filename：ServerContainer
  */
-@Log4j2
+@Slf4j
 @Data
 public class ServerContainer implements LifeCycle{
     private static GlobalConfig globalConfig=GlobalConfig.getConfig();

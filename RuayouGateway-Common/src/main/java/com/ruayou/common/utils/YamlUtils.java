@@ -1,9 +1,10 @@
 package com.ruayou.common.utils;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
+import java.io.InputStream;
 import java.io.Reader;
 
 /**
@@ -12,7 +13,7 @@ import java.io.Reader;
  * @Filename：YamlUtils
  * 用于解析Yaml的工具
  */
-@Log4j2
+@Slf4j
 public class YamlUtils {
     private final static Yaml yaml ;
     static {
@@ -30,10 +31,18 @@ public class YamlUtils {
         return null;
     }
 
-
     public static <T> T parseYaml(Reader reader,Class<T> clazz) {
         try {
             return yaml.loadAs(reader, clazz);
+        }catch (YAMLException e){
+            log.error("Yaml text parsing error!");
+        }
+        return null;
+    }
+
+    public static <T> T parseYaml(InputStream in, Class<T> clazz) {
+        try {
+            return yaml.loadAs(in, clazz);
         }catch (YAMLException e){
             log.error("Yaml text parsing error!");
         }

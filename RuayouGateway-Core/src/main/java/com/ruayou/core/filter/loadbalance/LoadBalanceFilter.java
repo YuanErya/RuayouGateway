@@ -10,7 +10,7 @@ import com.ruayou.core.context.request.GatewayRequest;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import com.ruayou.core.manager.CacheManager;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -22,7 +22,7 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
  * @Date：2024/2/5 23:33
  * @Filename：LoadBalanceFilter
  */
-@Log4j2
+@Slf4j
 @GFilter(id = LOAD_BALANCE_FILTER_ID, name = LOAD_BALANCE_FILTER_NAME, order = LOAD_BALANCE_FILTER_ORDER)
 public class LoadBalanceFilter implements Filter {
     private final static Cache<String, LoadBalanceStrategy> loadBaStrategyCache = CacheManager.createCache(CacheManager.FILTER_RULE_CACHE,"loadBaStrategyCache");

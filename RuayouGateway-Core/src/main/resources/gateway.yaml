@@ -1,0 +1,11 @@
+httpClientConfig:
+  httpConnectTimeout: 30000
+  httpConnectionsPerHost: 8000
+  httpMaxConnections: 10000
+  httpMaxRequestRetry: 2
+  httpPooledConnectionIdleTimeout: 60000
+  httpRequestTimeout: 30000
+nettyServerConfig:
+  eventLoopGroupWorkerNum: 16
+  maxContentLength: 67108864
+  port: 8999

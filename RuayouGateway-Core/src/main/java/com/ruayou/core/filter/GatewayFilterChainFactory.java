@@ -1,23 +1,21 @@
 package com.ruayou.core.filter;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.filter.router.RouterFilter;
 import com.ruayou.core.manager.CacheManager;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author：ruayou
  * @Date：2024/2/2 22:12
  * @Filename：GatewayFilterChainFactory
  */
-@Log4j2
+@Slf4j
 public class GatewayFilterChainFactory implements FilterChainFactory{
     private static final String id="GatewayFilterChainFactory";
     private static final Map<String, Filter> processorFilterIdMap = new ConcurrentHashMap<>();

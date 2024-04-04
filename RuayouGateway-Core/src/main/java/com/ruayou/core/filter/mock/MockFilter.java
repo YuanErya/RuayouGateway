@@ -7,7 +7,8 @@ import com.ruayou.core.context.response.GatewayResponse;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import com.ruayou.core.helper.ResponseHelper;
-import lombok.extern.log4j.Log4j2;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import static com.ruayou.common.constant.FilterConst.*;
  * @Date：2024/3/4 16:48
  * @Filename：MockFilter
  */
-@Log4j2
+@Slf4j
 @GFilter(id=MOCK_FILTER_ID,
         name = MOCK_FILTER_NAME,
         order = MOCK_FILTER_ORDER)

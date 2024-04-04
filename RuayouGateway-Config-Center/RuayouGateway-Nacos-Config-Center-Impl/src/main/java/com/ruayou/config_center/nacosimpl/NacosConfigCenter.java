@@ -7,13 +7,15 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.ruayou.configcenter.api.ConfigCenter;
 import com.ruayou.configcenter.api.ConfigChangeListener;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.Executor;
 /**
  * @Author：ruayou
  * @Date：2024/1/29 22:37
  * @Filename：NacosConfigCenter
  */
-@Log4j2
+@Slf4j
 public class NacosConfigCenter implements ConfigCenter {
     /**
      * 服务端地址

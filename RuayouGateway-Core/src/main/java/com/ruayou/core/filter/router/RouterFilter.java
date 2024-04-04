@@ -10,6 +10,7 @@ import com.ruayou.core.filter.GFilter;
 import com.ruayou.core.helper.AsyncHttpHelper;
 import com.ruayou.core.helper.ResponseHelper;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.Response;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import static com.ruayou.common.constant.FilterConst.*;
  * @Date：2024/1/29 18:15
  * @Filename：RouterFilter
  */
-@Log4j2
+@Slf4j
 @GFilter(id = ROUTER_FILTER_ID, name = ROUTER_FILTER_NAME, order = ROUTER_FILTER_ORDER)
 public class RouterFilter implements Filter {
 

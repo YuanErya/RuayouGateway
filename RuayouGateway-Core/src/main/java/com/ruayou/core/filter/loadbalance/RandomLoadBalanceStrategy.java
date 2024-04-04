@@ -2,7 +2,8 @@ package com.ruayou.core.filter.loadbalance;
 
 import com.ruayou.common.constant.FilterConst;
 import com.ruayou.common.entity.ServiceInstance;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @Filename：RandomLoadBalanceStrategy
  * 随机负载均衡
  */
-@Log4j2
+@Slf4j
 public class RandomLoadBalanceStrategy extends AbstractLoadBalanceStrategy{
     @Override
     public ServiceInstance doChoose(List<ServiceInstance> instanceList) {

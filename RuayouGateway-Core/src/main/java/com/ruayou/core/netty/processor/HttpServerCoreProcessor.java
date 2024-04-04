@@ -15,13 +15,14 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Author：ruayou
  * @Date：2024/1/26 23:42
  * @Filename：HttpServerProcessor
  */
-@Log4j2
+@Slf4j
 public class HttpServerCoreProcessor implements HttpProcessor{
     private final FilterChainFactory filterChainFactory = GatewayFilterChainFactory.getFactory();
     @Override

@@ -3,8 +3,7 @@ package com.ruayou.core.filter.loadbalance;
 import com.ruayou.common.entity.ServiceInstance;
 import com.ruayou.common.exception.InstanceException;
 import com.ruayou.core.manager.ServiceAndInstanceManager;
-import lombok.extern.log4j.Log4j2;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,7 @@ import static com.ruayou.common.enums.ResponseCode.SERVICE_INSTANCE_NOT_FOUND;
  * @Date：2024/3/10 22:16
  * @Filename：AbstractLoadBalanceStrategy
  */
-@Log4j2
+@Slf4j
 public abstract class AbstractLoadBalanceStrategy implements LoadBalanceStrategy{
     private static final ConcurrentHashMap<String, LoadBalanceStrategy> map = new ConcurrentHashMap<>();
     @Override

@@ -4,6 +4,7 @@ import com.ruayou.core.context.GatewayContext;
 import com.ruayou.core.filter.Filter;
 import com.ruayou.core.filter.GFilter;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import static com.ruayou.common.constant.FilterConst.*;
 
@@ -13,7 +14,7 @@ import static com.ruayou.common.constant.FilterConst.*;
  * @Filename：GrayFilter
  * 灰度发布过滤器
  */
-@Log4j2
+@Slf4j
 @GFilter(id = GRAY_FILTER_ID,
         name = GRAY_FILTER_NAME,
         order = GRAY_FILTER_ORDER)

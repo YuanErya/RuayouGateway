@@ -22,13 +22,14 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Author：ruayou
  * @Date：2024/1/26 20:26
  * @Filename：HttpServer netty服务端, 用于接收处理Http请求
  */
-@Log4j2
+@Slf4j
 public class NettyHttpServer implements LifeCycle {
     public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private NettyServerConfig config;

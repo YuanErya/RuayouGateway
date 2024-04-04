@@ -6,13 +6,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @Author：ruayou
  * @Date：2024/3/2 14:34
  * @Filename：NettyServerConnectManagerHandler
  */
-@Log4j2
+@Slf4j
 public class NettyServerConnectManagerHandler extends ChannelDuplexHandler {
     /**
      * 当通道被注册到它的EventLoop时调用，即它可以开始处理I/O事件。

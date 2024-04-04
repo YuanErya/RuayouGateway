@@ -24,7 +24,7 @@ import java.util.List;
  * @Date：2024/2/21 16:42
  * @Filename：SpringClientRegisterManager
  */
-@Log4j2
+@Slf4j
 public class SpringClientRegisterManager extends AbstractRegisterManager implements ApplicationListener<ApplicationEvent>, ApplicationContextAware {
     private ApplicationContext applicationContext;
 

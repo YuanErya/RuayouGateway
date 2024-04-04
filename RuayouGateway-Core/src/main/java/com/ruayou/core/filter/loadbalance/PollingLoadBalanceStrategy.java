@@ -2,7 +2,8 @@ package com.ruayou.core.filter.loadbalance;
 
 import com.ruayou.common.constant.FilterConst;
 import com.ruayou.common.entity.ServiceInstance;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Filename：PollingLoadBalanceStrategy
  * 轮询负载均衡策略
  */
-@Log4j2
+@Slf4j
 public class PollingLoadBalanceStrategy extends AbstractLoadBalanceStrategy{
     private final AtomicInteger flag = new AtomicInteger(0);
     @Override

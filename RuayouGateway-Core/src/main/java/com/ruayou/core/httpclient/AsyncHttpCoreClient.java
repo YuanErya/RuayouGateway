@@ -1,7 +1,7 @@
 package com.ruayou.core.httpclient;
 
 import com.ruayou.common.config.GlobalConfig;
-import com.ruayou.common.config.NettyServerConfig;
+
 import com.ruayou.core.LifeCycle;
 import com.ruayou.common.config.HttpClientConfig;
 import com.ruayou.core.ServerContainer;
@@ -9,7 +9,8 @@ import com.ruayou.core.helper.AsyncHttpHelper;
 import com.ruayou.core.netty.NettyHttpServer;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.EventLoopGroup;
-import lombok.extern.log4j.Log4j2;
+
+import lombok.extern.slf4j.Slf4j;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
@@ -22,7 +23,7 @@ import java.io.IOException;
  * @Date：2024/1/27 20:37
  * @Filename：AsyncHttpCoreClient
  */
-@Log4j2
+@Slf4j
 public class AsyncHttpCoreClient implements LifeCycle {
     private AsyncHttpClient httpClient;
     private  HttpClientConfig config;

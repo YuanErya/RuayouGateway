@@ -1,9 +1,7 @@
 package com.ruayou.core.filter.limit.strategy;
 
 import com.ruayou.core.filter.filter_rule.FilterRule;
-import com.ruayou.common.enums.ResponseCode;
-import com.ruayou.common.exception.LimitedException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -13,7 +11,7 @@ import java.util.List;
  * @Date：2024/3/8 23:30
  * @Filename：IPLimitStrategy
  */
-@Log4j2
+@Slf4j
 public class IPLimitStrategy implements LimitStrategy {
     @Override
     public Boolean tryPass(String clientIp, FilterRule.LimitConfig config) {

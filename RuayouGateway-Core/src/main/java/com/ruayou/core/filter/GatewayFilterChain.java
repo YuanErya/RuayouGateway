@@ -1,7 +1,7 @@
 package com.ruayou.core.filter;
 
 import com.ruayou.core.context.GatewayContext;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * @Date：2024/2/1 23:46
  * @Filename：GatewayFilterChain
  */
-@Log4j2
+@Slf4j
 public class GatewayFilterChain {
     private List<Filter> filters = new ArrayList<>();
 
