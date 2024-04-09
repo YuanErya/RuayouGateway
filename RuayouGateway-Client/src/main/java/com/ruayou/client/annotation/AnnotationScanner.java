@@ -22,12 +22,10 @@ public class AnnotationScanner {
 
     public List<RGService> getBeansWithRGServiceAnnotation(ApplicationContext applicationContext) {
         List<RGService> annotatedBeans = new ArrayList<>();
-        Map<String, Object> beans = applicationContext.getBeansOfType(Object.class);
-        for (Object bean : beans.values()) {
-            if (bean.getClass().isAnnotationPresent(RGService.class)) {
-                annotatedBeans.add(bean.getClass().getAnnotation(RGService.class));
-            }
-        }
+        Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RGService.class);
+        System.out.println(beans);
+        System.out.println(beans.get("serviceConfig").getClass().getName());
+        beans.forEach((key, value) -> annotatedBeans.add(value.getClass().getAnnotation(RGService.class)));
         return annotatedBeans;
     }
 
