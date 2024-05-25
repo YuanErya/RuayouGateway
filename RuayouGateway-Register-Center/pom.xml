@@ -12,5 +12,8 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>RuayouGateway-Register-Center-Api</module>
+        <module>RuayouGateway-Zookeeper-Register-Center-Impl</module>
     </modules>
+
+
 </project>

@@ -1,4 +1,5 @@
 
+import com.ruayou.common.config.RegisterAndConfigCenterConfig;
 import com.ruayou.common.utils.NetUtils;
 import com.ruayou.core.filter.filter_rule.FilterRule;
 import com.ruayou.core.filter.filter_rule.FilterRules;
@@ -7,9 +8,6 @@ import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.common.config.GlobalConfig;
 import org.junit.Test;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -28,7 +26,7 @@ public class YamlTest {
     @Test
     public void testConfig(){
         GlobalConfig config = new GlobalConfig();
-        config.getNacosConfig().setEnv("prod");
+        config.getRegisterAndConfigCenterConfig().setEnv("prod");
         System.out.println(GlobalConfig.getConfig().equals(config));
     }
     @Test
@@ -77,5 +75,11 @@ public class YamlTest {
 
 
     }
+
+    @Test
+    public void testNacosConfig(){
+        System.out.println(YamlUtils.toYaml(new RegisterAndConfigCenterConfig()));
+    }
+
 
 }

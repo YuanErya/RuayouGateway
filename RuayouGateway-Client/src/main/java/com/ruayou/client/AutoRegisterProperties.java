@@ -15,6 +15,8 @@ public class AutoRegisterProperties {
      * 注册中心地址
      */
     private String address;
+
+    private String server;
     /**
      * 环境
      */

@@ -3,10 +3,12 @@ package com.ruayou.client.manager;
 import com.ruayou.client.AutoRegisterProperties;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.GatewayException;
 import com.ruayou.registercenter.api.RegisterCenter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -28,10 +30,15 @@ public abstract class AbstractRegisterManager {
         //初始化注册中心对象
         ServiceLoader<RegisterCenter> serviceLoader = ServiceLoader.load(RegisterCenter.class);
         //获取注册中心实现 如果没有就报错
-        registerCenter = serviceLoader.findFirst().orElseThrow(() -> {
-            log.error("not found RegisterCenter impl");
-            return new RuntimeException("not found RegisterCenter impl");
-        });
+        for (RegisterCenter next : serviceLoader) {
+            if (next.getClass().getName().equals(properties.getServer())) {
+                this.registerCenter = next;
+                break;
+            }
+        }
+        if (this.registerCenter==null) {
+            throw new GatewayException("gateway client load registerCenter fail");
+        }
         //注册中心初始化代码
         registerCenter.init(properties.getAddress(), properties.getEnv());
     }

@@ -5,35 +5,34 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ruayou</groupId>
-        <artifactId>RuayouGateway</artifactId>
+        <artifactId>RuayouGateway-Register-Center</artifactId>
         <version>1.0</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>RuayouGateway-Nacos-Register-Center-Impl</artifactId>
+    <artifactId>RuayouGateway-Zookeeper-Register-Center-Impl</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nacos-client.version>2.3.0</nacos-client.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-            <version>${nacos-client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ruayou</groupId>
-            <artifactId>RuayouGateway-Common</artifactId>
-            <version>1.0</version>
-        </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Register-Center-Api</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>4.2.0</version>
         </dependency>
     </dependencies>
 

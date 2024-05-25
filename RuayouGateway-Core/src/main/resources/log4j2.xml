@@ -13,9 +13,7 @@
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout pattern="${consolePatternLayout}"/>
-            <Filters>
-                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
-            </Filters>
+
         </Console>
 
         <RollingRandomAccessFile name="RandomAccessFile" fileName="${LOG_HOME}/core.log" filePattern="${LOG_HOME}/core-%d{yyyy-MM-dd}-%i.log" >
@@ -47,7 +45,7 @@
         <Logger name="com.ruayou.core.filter.router.RouterFilter" level="INFO" includeLocation="true">
             <AppenderRef ref="AccessLogFile"/>
         </Logger>
-        <Logger name="com.ruayou.core" level="INFO" includeLocation="true">
+        <Logger name="com.ruayou" level="INFO" includeLocation="true">
             <Appender-Ref ref="CONSOLE"/>
         </Logger>
         <Root level="INFO">

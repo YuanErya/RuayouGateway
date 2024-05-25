@@ -1,2 +1,2 @@
-
 com.ruayou.register_center.nacosimpl.NacosRegisterCenter
+com.ruayou.register_center.zookeeperimpl.ZookeeperRegisterCenter

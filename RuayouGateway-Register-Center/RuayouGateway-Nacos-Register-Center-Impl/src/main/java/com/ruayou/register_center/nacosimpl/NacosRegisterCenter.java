@@ -17,6 +17,7 @@ import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.GatewayException;
 import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class NacosRegisterCenter implements RegisterCenter {
     }
 
     @Override
-    public void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) {
+    public void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) throws GatewayException {
         try {
             //注册
             namingService.registerInstance(serviceDefinition.getServiceId(), group, changeInstance2Nacos(serviceInstance));
@@ -87,6 +88,7 @@ public class NacosRegisterCenter implements RegisterCenter {
             log.info("register {} {}", serviceDefinition, serviceInstance);
         } catch (NacosException e) {
             log.error(e.getMessage());
+            //throw new GatewayException("Check Nacos host and port. "+e.getMessage());
         }
     }
 
@@ -97,7 +99,7 @@ public class NacosRegisterCenter implements RegisterCenter {
             namingService.deregisterInstance(serviceDefinition.getServiceId(), group, serviceInstance.getIp(),
                     serviceInstance.getPort());
         } catch (NacosException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
         }
     }
 

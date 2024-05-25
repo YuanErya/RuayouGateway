@@ -26,6 +26,11 @@
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
+            <artifactId>RuayouGateway-Zookeeper-Register-Center-Impl</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Nacos-Register-Center-Impl</artifactId>
             <version>1.0</version>
         </dependency>
@@ -54,5 +59,51 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 此插件必须放在父 POM 中  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <!-- 排除log4j2插件文件 解决在打成jar包运行时日志无法打印的问题 https://stackoverflow.com/questions/34945438/log4j2-configuration-not-found-when-running-standalone-application-built-by-shad-->
+                                        <exclude>**/Log4j2Plugins.dat</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <!-- 设置生成的 JAR 包后缀名 -->
+                            <shadedClassifierName>prod</shadedClassifierName>
+                            <!-- 设置程序运行入口 -->
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.ruayou.core.RuayouGateway</mainClass>
+                                </transformer>
+                            </transformers>
+                            <!-- 设置 JAR 包输出目录 -->
+                            <outputDirectory>${project.build.directory}/#maven-shade-plugin</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

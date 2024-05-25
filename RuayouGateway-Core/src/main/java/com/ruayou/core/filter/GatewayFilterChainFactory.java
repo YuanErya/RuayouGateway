@@ -36,7 +36,7 @@ public class GatewayFilterChainFactory implements FilterChainFactory{
         serviceLoader.stream().forEach(filterProvider -> {
             Filter filter = filterProvider.get();
             GFilter annotation = filter.getClass().getAnnotation(GFilter.class);
-            log.info("load filter success:{},{},{},{}", filter.getClass(), annotation.id(), annotation.name(),
+            log.debug("load filter success:{},{},{},{}", filter.getClass(), annotation.id(), annotation.name(),
                     annotation.order());
             //添加到过滤集合
             String filterId = annotation.id();

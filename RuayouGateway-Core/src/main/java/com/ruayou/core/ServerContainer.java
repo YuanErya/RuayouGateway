@@ -5,6 +5,7 @@ import com.ruayou.common.constant.CommonConst;
 import com.ruayou.common.constant.ServiceConst;
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.GatewayException;
 import com.ruayou.common.utils.NetUtils;
 import com.ruayou.common.utils.YamlUtils;
 import com.ruayou.configcenter.api.ConfigCenter;
@@ -21,13 +22,10 @@ import com.ruayou.core.netty.processor.HttpServerCoreProcessor;
 import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @Author：ruayou
@@ -40,7 +38,7 @@ public class ServerContainer implements LifeCycle{
     private static GlobalConfig globalConfig=GlobalConfig.getConfig();
     private static HttpClientConfig httpClientConfig=globalConfig.getHttpClientConfig();
     private static NettyServerConfig nettyServerConfig=globalConfig.getNettyServerConfig();
-    private static NacosConfig nacosConfig=globalConfig.getNacosConfig();
+    private static RegisterAndConfigCenterConfig registerAndConfigCenterConfig =globalConfig.getRegisterAndConfigCenterConfig();
     private HttpProcessor processor;
     boolean initFlag=false;
     boolean startFlag=false;
@@ -73,7 +71,7 @@ public class ServerContainer implements LifeCycle{
             log.error("ConfigCenter impl load fail");
             return new RuntimeException("ConfigCenter impl load fail");
         });
-        configCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
+        configCenter.init(registerAndConfigCenterConfig.getRegistryAddress(), registerAndConfigCenterConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(String configInfo) {
@@ -113,7 +111,8 @@ public class ServerContainer implements LifeCycle{
                 log.info("检测到过滤规则配置更新：{}",FilterRules.getGlobalRules());
             }
         });
-        registerAndSubscribe(nacosConfig,nettyServerConfig);
+
+        registerAndSubscribe(registerAndConfigCenterConfig,nettyServerConfig);
         run.forEach(LifeCycle::start);
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
@@ -136,16 +135,24 @@ public class ServerContainer implements LifeCycle{
         return run;
     }
 
-    private static RegisterCenter registerAndSubscribe(NacosConfig nacosConfig,NettyServerConfig nettyServerConfig) {
+    private static RegisterCenter registerAndSubscribe(RegisterAndConfigCenterConfig registerAndConfigCenterConfig, NettyServerConfig nettyServerConfig) throws GatewayException {
         ServiceLoader<RegisterCenter> serviceLoader = ServiceLoader.load(RegisterCenter.class);
-        final RegisterCenter registerCenter = serviceLoader.findFirst().orElseThrow(() -> {
-            log.error("Register impl load fail");
-            return new RuntimeException("Register impl load fail");
-        });
-        registerCenter.init(nacosConfig.getRegistryAddress(), nacosConfig.getEnv());
+        RegisterCenter registerCenter=null;
+        Iterator<RegisterCenter> iterator = serviceLoader.iterator();
+        while (iterator.hasNext()) {
+            RegisterCenter next = iterator.next();
+            if (next.getClass().getName().equals(registerAndConfigCenterConfig.getServer())) {
+                registerCenter=next;
+                break;
+            }
+        }
+        if (registerCenter==null) {
+            throw new GatewayException("registerCenter impl load fail");
+        }
+        registerCenter.init(registerAndConfigCenterConfig.getRegistryAddress(), registerAndConfigCenterConfig.getEnv());
         //构造网关服务定义和服务实例
-        ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(nacosConfig);
-        ServiceInstance serviceInstance = buildGatewayServiceInstance(serviceDefinition,nettyServerConfig,nacosConfig);
+        ServiceDefinition serviceDefinition = buildGatewayServiceDefinition(registerAndConfigCenterConfig);
+        ServiceInstance serviceInstance = buildGatewayServiceInstance(serviceDefinition,nettyServerConfig, registerAndConfigCenterConfig);
         //注册
         registerCenter.register(serviceDefinition, serviceInstance);
         //订阅
@@ -153,7 +160,7 @@ public class ServerContainer implements LifeCycle{
             @Override
             public void onChange(ServiceDefinition serviceDefinition, Set<ServiceInstance> serviceInstanceSet) {
                 log.info("refresh service and instance: {} {}", serviceDefinition.getServiceId(), serviceInstanceSet);
-                if (serviceDefinition.getServiceId().equals(nacosConfig.getApplicationName())) {
+                if (serviceDefinition.getServiceId().equals(registerAndConfigCenterConfig.getApplicationName())) {
                     //网关本体并不需要加入实例
                     return;
                 }
@@ -170,7 +177,7 @@ public class ServerContainer implements LifeCycle{
         return registerCenter;
     }
 
-    private static ServiceInstance buildGatewayServiceInstance(ServiceDefinition definition,NettyServerConfig nettyServerConfig,NacosConfig config) {
+    private static ServiceInstance buildGatewayServiceInstance(ServiceDefinition definition, NettyServerConfig nettyServerConfig, RegisterAndConfigCenterConfig config) {
         String localIp = NetUtils.getLocalIp();
         int port = nettyServerConfig.getPort();
         ServiceInstance serviceInstance = new ServiceInstance();
@@ -183,7 +190,7 @@ public class ServerContainer implements LifeCycle{
         return serviceInstance;
     }
 
-    private static ServiceDefinition buildGatewayServiceDefinition(NacosConfig config) {
+    private static ServiceDefinition buildGatewayServiceDefinition(RegisterAndConfigCenterConfig config) {
         String applicationName = config.getApplicationName();
         ServiceDefinition serviceDefinition = new ServiceDefinition();
         serviceDefinition.setServiceId(applicationName);
@@ -195,6 +202,6 @@ public class ServerContainer implements LifeCycle{
         globalConfig = config;
         httpClientConfig=config.getHttpClientConfig();
         nettyServerConfig=config.getNettyServerConfig();
-        nacosConfig=config.getNacosConfig();
+        registerAndConfigCenterConfig =config.getRegisterAndConfigCenterConfig();
     }
 }

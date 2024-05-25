@@ -13,6 +13,10 @@ public class GatewayException extends RuntimeException{
     protected ResponseCode code;
     public GatewayException() {
     }
+
+    public GatewayException(String message) {
+        super(message);
+    }
     public GatewayException(ResponseCode code) {
         super(code.getMessage());
         this.code=code;

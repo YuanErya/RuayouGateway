@@ -3,6 +3,7 @@ package com.ruayou.registercenter.api;
 
 import com.ruayou.common.entity.ServiceDefinition;
 import com.ruayou.common.entity.ServiceInstance;
+import com.ruayou.common.exception.GatewayException;
 
 public interface RegisterCenter {
 
@@ -18,7 +19,7 @@ public interface RegisterCenter {
      * @param serviceDefinition 服务定义信息
      * @param serviceInstance 服务实例信息
      */
-    void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance);
+    void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) throws GatewayException;
 
     /**
      * 注销

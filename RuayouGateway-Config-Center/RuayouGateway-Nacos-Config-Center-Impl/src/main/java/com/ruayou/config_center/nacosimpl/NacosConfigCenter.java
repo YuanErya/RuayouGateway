@@ -51,6 +51,10 @@ public class NacosConfigCenter implements ConfigCenter {
     public void subscribeConfigChange(String dataId, ConfigChangeListener listener) {
         try {
             String configStr = configService.getConfig(dataId, env, 5000);
+            if (configStr==null) {
+                log.warn("not find:[{}] config from config center! ",dataId);
+                return ;
+            }
             log.debug("config from nacos: {}", configStr);
             //GlobalConfig config = YamlUtils.parseYaml(configStr, GlobalConfig.class);
             listener.onConfigChange(configStr);

@@ -1,0 +1,4 @@
+applicationName: ruayou-gateway
+env: dev
+registryAddress: 127.0.0.1:2181
+server: com.ruayou.register_center.zookeeperimpl.ZookeeperRegisterCenter
