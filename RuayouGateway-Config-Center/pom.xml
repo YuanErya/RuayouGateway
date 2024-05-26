@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>RuayouGateway-Config-Center-Api</module>
+        <module>RuayouGateway-Zookeeper-Config-Center-Impl</module>
     </modules>
 
     <properties>

@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.ruayou.common.constant.CommonConst.PATH_SEPARATOR;
+
 /**
  * @Author：ruayou
  * @Date：2024/5/25 19:06
@@ -30,7 +32,6 @@ public class ZookeeperRegisterCenter implements RegisterCenter {
     private CuratorFramework client;
     private String env;
     private String registerAddress;
-    private static String GANG = "/";
     private static String SERVICE_BASE="/service";
 
 
@@ -60,12 +61,12 @@ public class ZookeeperRegisterCenter implements RegisterCenter {
     @Override
     public void register(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) throws GatewayException {
         try {
-            String servicePath=SERVICE_BASE+GANG+serviceDefinition.getServiceId();
+            String servicePath=SERVICE_BASE+PATH_SEPARATOR+serviceDefinition.getServiceId();
             if (client.checkExists().forPath(servicePath)==null) {
                 //注册服务，CONTAINER模式当它包含的最后一个子节点被删除后，该container父节点会被删除
                 client.create().withMode(CreateMode.CONTAINER).forPath(servicePath, JSON.toJSONBytes(serviceDefinition));
             }
-            String instancePath=servicePath+GANG+serviceInstance.getServiceInstanceId();
+            String instancePath=servicePath+PATH_SEPARATOR+serviceInstance.getServiceInstanceId();
             if (client.checkExists().forPath(instancePath)==null) {
                 //注册实例
                 client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, JSON.toJSONBytes(serviceInstance));
@@ -78,7 +79,7 @@ public class ZookeeperRegisterCenter implements RegisterCenter {
     @Override
     public void deregister(ServiceDefinition serviceDefinition, ServiceInstance serviceInstance) {
         try {
-            String instancePath=SERVICE_BASE+GANG+serviceDefinition.getServiceId()+GANG+serviceInstance.getServiceInstanceId();
+            String instancePath=SERVICE_BASE+PATH_SEPARATOR+serviceDefinition.getServiceId()+PATH_SEPARATOR+serviceInstance.getServiceInstanceId();
             if (client.checkExists().forPath(instancePath)!=null) {
                 //删除实例
                 client.delete().forPath(instancePath);
@@ -113,13 +114,13 @@ public class ZookeeperRegisterCenter implements RegisterCenter {
                 return;
             }
             String path = data.getPath().substring(SERVICE_BASE.length()+1);
-            String[] split = path.split(GANG);
-            String servicePath = SERVICE_BASE+GANG+split[0];
+            String[] split = path.split(PATH_SEPARATOR);
+            String servicePath = SERVICE_BASE+PATH_SEPARATOR+split[0];
             ServiceDefinition definition = JSON.parseObject(curatorFramework.getData().forPath(servicePath), ServiceDefinition.class);
             List<String> childPaths = curatorFramework.getChildren().forPath(servicePath);
             Set<ServiceInstance> instanceList=new HashSet<>();
             for (String childPath : childPaths) {
-                String cPath = servicePath+ GANG + childPath;
+                String cPath = servicePath+ PATH_SEPARATOR + childPath;
                 ServiceInstance inst = JSON.parseObject(curatorFramework.getData().forPath(cPath), ServiceInstance.class);
                 if (inst != null) {instanceList.add(inst);}
             }

@@ -23,9 +23,8 @@ import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
-import java.util.function.Predicate;
+
 
 /**
  * @Author：ruayou
@@ -66,12 +65,20 @@ public class ServerContainer implements LifeCycle{
         if (!initFlag) {
             init();
         }
+        ConfigCenter configCenter = null;
         ServiceLoader<ConfigCenter> serviceLoader = ServiceLoader.load(ConfigCenter.class);
-        final ConfigCenter configCenter = serviceLoader.findFirst().orElseThrow(() -> {
-            log.error("ConfigCenter impl load fail");
-            return new RuntimeException("ConfigCenter impl load fail");
-        });
-        configCenter.init(registerAndConfigCenterConfig.getRegistryAddress(), registerAndConfigCenterConfig.getEnv());
+        Iterator<ConfigCenter> iterator = serviceLoader.iterator();
+        while (iterator.hasNext()) {
+            ConfigCenter next = iterator.next();
+            if (next.getClass().getName().equals(registerAndConfigCenterConfig.getConfigServer())) {
+                configCenter=next;
+                break;
+            }
+        }
+        if(configCenter==null){
+            throw new GatewayException("load configCenter failed !");
+        }
+        configCenter.init(registerAndConfigCenterConfig.getConfigAddress(), registerAndConfigCenterConfig.getEnv());
         configCenter.subscribeConfigChange(GlobalConfig.dataId, new ConfigChangeListener() {
             @Override
             public void onConfigChange(String configInfo) {
@@ -82,17 +89,23 @@ public class ServerContainer implements LifeCycle{
                     GlobalConfig.saveConfig(gf);
                     updateConfig(gf);
                     //第一次启动之前不用重启组件。
-                    if(!startFlag)return;
+                    if(!startFlag) {
+                        return;
+                    }
                     //重启配置变更的组件
                     if (!gf.getNettyServerConfig().equals(origin.getNettyServerConfig())) {
                         run.forEach((component)->{
-                            if(component instanceof NettyHttpServer )component.restart();
+                            if(component instanceof NettyHttpServer ) {
+                                component.restart();
+                            }
                         });
                     }
                     //重启配置变更的组件
                     if (!gf.getHttpClientConfig().equals(origin.getHttpClientConfig())) {
                         run.forEach((component)->{
-                            if(component instanceof AsyncHttpCoreClient )component.restart();
+                            if(component instanceof AsyncHttpCoreClient ) {
+                                component.restart();
+                            }
                         });
                     }
                 }
@@ -114,6 +127,7 @@ public class ServerContainer implements LifeCycle{
 
         registerAndSubscribe(registerAndConfigCenterConfig,nettyServerConfig);
         run.forEach(LifeCycle::start);
+        this.startFlag=true;
         log.debug("RuayouGateway网关启动成功，正在监听端口：{}", nettyServerConfig.getPort());
     }
 
@@ -141,7 +155,7 @@ public class ServerContainer implements LifeCycle{
         Iterator<RegisterCenter> iterator = serviceLoader.iterator();
         while (iterator.hasNext()) {
             RegisterCenter next = iterator.next();
-            if (next.getClass().getName().equals(registerAndConfigCenterConfig.getServer())) {
+            if (next.getClass().getName().equals(registerAndConfigCenterConfig.getRegisterServer())) {
                 registerCenter=next;
                 break;
             }

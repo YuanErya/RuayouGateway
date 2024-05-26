@@ -31,6 +31,11 @@
         </dependency>
         <dependency>
             <groupId>com.ruayou</groupId>
+            <artifactId>RuayouGateway-Zookeeper-Config-Center-Impl</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ruayou</groupId>
             <artifactId>RuayouGateway-Nacos-Register-Center-Impl</artifactId>
             <version>1.0</version>
         </dependency>

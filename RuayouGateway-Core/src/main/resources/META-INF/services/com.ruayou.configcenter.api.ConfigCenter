@@ -1,1 +1,2 @@
 com.ruayou.config_center.nacosimpl.NacosConfigCenter
+com.ruayou.config_center.zookeeperimpl.ZookeeperConfigCenter

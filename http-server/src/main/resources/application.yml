@@ -2,7 +2,7 @@ server:
   port: 8081
 
 register:
-  address: 127.0.0.1:2181
+  address: 127.0.0.7:2181
   env: dev
   gray: false
   server: com.ruayou.register_center.zookeeperimpl.ZookeeperRegisterCenter
