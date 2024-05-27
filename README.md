@@ -1,10 +1,10 @@
 # RuayouGateway网关
 
-该项目是基于Netty搭建的高性能微服务网关项目，整合Nacos作为服务的注册中心和配置中心，最细可配置接口粒度的路由规则，可实时动态热更新路由规则以及系统的属性配置。具有 IP、IP段黑名单，Mock 模拟，灰度发布，流量控制，负载均衡，路由分发，超时重试等功能。
+该项目是基于Netty搭建的高性能微服务网关项目，整合Nacos，Zookeeper作为服务的注册中心和配置中心，最细可配置接口粒度的路由规则，可实时动态热更新路由规则以及系统的属性配置。具有 IP、IP段黑名单，Mock 模拟，灰度发布，流量控制，负载均衡，路由分发，超时重试等功能。
 
 ## 技术栈
 
-Netty，SpringBoot，Asynchttp，Nacos，Caffeine Cache，Disruptor，Java SPI
+Netty，SpringBoot，Asynchttp，Nacos，Zookeeper，Caffeine Cache，Disruptor，Java SPI
 
 ## 项目核心亮点：
 
@@ -20,6 +20,17 @@ Netty，SpringBoot，Asynchttp，Nacos，Caffeine Cache，Disruptor，Java SPI
 ## 使用以及配置
 
 ### 配置文件
+**注册中心配置中心**
+命名register-config.yaml，和生成的可执行jar包位于同一目录。
+````yaml
+applicationName: ruayou-gateway
+env: dev
+registryAddress: 127.0.0.7:2181
+registerServer: com.ruayou.register_center.zookeeperimpl.ZookeeperRegisterCenter
+
+configServer: com.ruayou.config_center.zookeeperimpl.ZookeeperConfigCenter
+configAddress: 127.0.0.7:2181
+````
 
 **核心配置**
 
@@ -108,9 +119,10 @@ rules:
 
 ````yaml
 register:
-  address: 192.168.8.111:8848
+  address: 127.0.0.7:2181
   env: dev
   gray: false
+  server: com.ruayou.register_center.zookeeperimpl.ZookeeperRegisterCenter
 ````
 
 之后可以在配置中心，写路由规则，当然不写也会有一套默认的路由规则，只开启了负载均衡和路由转发。
