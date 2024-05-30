@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-Netty，SpringBoot，Asynchttp，Nacos，Zookeeper，Caffeine Cache，Disruptor，Java SPI
+Netty，SpringBoot，Asynchttp，Nacos，ZooKeeper，Caffeine Cache，Disruptor，Java SPI
 
 ## 项目核心亮点：
 
