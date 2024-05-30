@@ -7,6 +7,7 @@ import com.ruayou.common.exception.GatewayException;
 import com.ruayou.registercenter.api.RegisterCenter;
 import com.ruayou.registercenter.api.RegisterCenterListener;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.CuratorZookeeperClient;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -14,6 +15,7 @@ import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +43,7 @@ public class ZookeeperRegisterCenter implements RegisterCenter {
         this.env = env;
         this.client = CuratorFrameworkFactory.builder()
                 .connectString(registerAddress)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 5))
+                .retryPolicy(new RetryNTimes(1000, 5))
                 //重试策略
                 .sessionTimeoutMs(5 * 1000)
                 .namespace(env)
