@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Configuration status="INFO" schema="Log4J-V2.0.xsd" monitorInterval="600">
+<Configuration status="WARN" schema="Log4J-V2.0.xsd" monitorInterval="600">
 
     <Properties>
         <!-- 	配置日志文件输出目录,此处为项目根目录下的logs文件夹 -->
@@ -11,45 +11,60 @@
     </Properties>
 
     <Appenders>
+        <!--输出到控制台-->
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout pattern="${consolePatternLayout}"/>
-
         </Console>
 
-        <RollingRandomAccessFile name="RandomAccessFile" fileName="${LOG_HOME}/core.log" filePattern="${LOG_HOME}/core-%d{yyyy-MM-dd}-%i.log" >
+        <!--输出到文件-->
+
+        <RollingRandomAccessFile name="AdminLogFile" fileName="${LOG_HOME}/admin.log" filePattern="${LOG_HOME}/admin-rolling/%d{yyyy-MM-dd HH}admin-%i.log" >
             <PatternLayout pattern="${filePatternLayout}" />
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="500MB"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <RollingRandomAccessFile name="AccessLogFile" fileName="${LOG_HOME}/access.log" filePattern="${LOG_HOME}/access-%d{yyyy-MM-dd}-%i.log" >
+        <RollingRandomAccessFile name="CoreLogFile" fileName="${LOG_HOME}/core.log" filePattern="${LOG_HOME}/core-rolling/%d{yyyy-MM-dd HH}core-%i.log" >
+            <PatternLayout pattern="${filePatternLayout}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="AccessLogFile" fileName="${LOG_HOME}/access.log" filePattern="${LOG_HOME}/access-rolling/%d{yyyy-MM-dd HH}access-%i.log" >
             <PatternLayout pattern="${accessPatternLayout}" />
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="500MB"/>
+                <SizeBasedTriggeringPolicy size="50MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
 
-        <Async name="Async" shutdownTimeout="10000">
-            <Appender-Ref ref="CONSOLE"/>
-            <Appender-Ref ref="RandomAccessFile"/>
+        <Async name="AsyncFile" shutdownTimeout="10000">
+            <Appender-Ref ref="CoreLogFile"/>
             <Appender-Ref ref="AccessLogFile"/>
+        </Async >
+
+        <Async name="AsyncConsole" shutdownTimeout="10000">
+            <Appender-Ref ref="CONSOLE"/>
         </Async>
+
     </Appenders>
 
     <Loggers>
-        <Logger name="com.ruayou.core.filter.router.RouterFilter" level="INFO" includeLocation="true" additivity="false">
-            <AppenderRef ref="AccessLogFile"/>
-        </Logger>
-        <Logger name="com.ruayou" level="INFO" includeLocation="true" additivity="false">
+        <Logger name="com.ruayou.core" level="INFO" includeLocation="true" additivity="false">
             <Appender-Ref ref="CONSOLE"/>
+            <AppenderRef ref="CoreLogFile" />
         </Logger>
+
         <Root level="INFO" additivity="false">
-            <AppenderRef ref="RandomAccessFile" />
+            <Appender-Ref ref="CONSOLE"/>
+            <AppenderRef ref="CoreLogFile" />
         </Root>
     </Loggers>
 </Configuration>
