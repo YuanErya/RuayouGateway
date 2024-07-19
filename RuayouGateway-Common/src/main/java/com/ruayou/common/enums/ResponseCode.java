@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ResponseCode {
     SUCCESS(HttpResponseStatus.OK, 0, "成功"),
-    UNAUTHORIZED(HttpResponseStatus.UNAUTHORIZED, 401, "用户未登陆"),
+    UNAUTHORIZED(HttpResponseStatus.UNAUTHORIZED, 401, "授权异常"),
     INTERNAL_ERROR(HttpResponseStatus.INTERNAL_SERVER_ERROR, 1000, "网关内部错误"),
     SERVICE_UNAVAILABLE(HttpResponseStatus.SERVICE_UNAVAILABLE, 2000, "服务暂时不可用,请稍后再试"),
     PATH_NO_MATCHED(HttpResponseStatus.NOT_FOUND,10002, "没有找到匹配的路径, 请求快速失败"),
@@ -17,6 +17,9 @@ public enum ResponseCode {
     HTTP_RESPONSE_ERROR(HttpResponseStatus.INTERNAL_SERVER_ERROR, 10030, "服务返回异常"),
     FLOW_CONTROL_ERROR(HttpResponseStatus.INTERNAL_SERVER_ERROR, 10040, "请求过量错误"),
     VERIFICATION_FAILED(HttpResponseStatus.BAD_REQUEST,10030, "请求参数校验失败"),
+
+    ASYNC_RESPONSE_ERROR(HttpResponseStatus.BAD_REQUEST,10090,"非法回调请求"),
+
 
     BLACKLIST(HttpResponseStatus.FORBIDDEN,10008, "请求IP在黑名单"),
     BLACKLIST_IP_ERROR(HttpResponseStatus.INTERNAL_SERVER_ERROR,10009,"过滤器请求黑名单IP配置异常")

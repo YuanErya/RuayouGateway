@@ -1,8 +1,7 @@
 package com.ruayou.common.constant;
 
 /**
- * @Author：ruayou
- * @Date：2024/2/2 22:26
+ *
  * @Filename：FilterConst
  */
 public interface FilterConst {
@@ -20,19 +19,22 @@ public interface FilterConst {
     String LIMIT_FILTER_TYPE_IP = "ip";
     String LIMIT_FILTER_TYPE_PROVINCE = "province";
 
+    String AUTH_FILTER_ID = "auth_filter";
+    String AUTH_FILTER_NAME = "auth_filter";
+    int AUTH_FILTER_ORDER = 2;
 
     String MOCK_FILTER_ID = "mock_filter";
     String MOCK_FILTER_NAME = "mock_filter";
-    int MOCK_FILTER_ORDER = 2;
+    int MOCK_FILTER_ORDER = 3;
 
-    String AUTH_FILTER_ID = "auth_filter";
 
-    String AUTH_FILTER_NAME = "auth_filter";
-    int AUTH_FILTER_ORDER = 3;
+    String ASYNC_GET_FILTER_ID = "async_get_filter";
+    String ASYNC_GET_FILTER_NAME = "async_get_filter";
+    int ASYNC_GET_FILTER_ORDER = 4;
 
     String GRAY_FILTER_ID = "gray_filter";
     String GRAY_FILTER_NAME = "gray_filter";
-    int GRAY_FILTER_ORDER = 4;
+    int GRAY_FILTER_ORDER = 5;
 
 
     String FLOW_CTL_FILTER_ID = "flow_ctl_filter";
@@ -52,6 +54,15 @@ public interface FilterConst {
     String LOAD_BALANCE_KEY = "load_balance";
     String LOAD_BALANCE_STRATEGY_RANDOM = "Random";
     String LOAD_BALANCE_STRATEGY_POLLING = "Polling";
+
+    String ASYNC_FILTER_ID = "async_filter";
+    String ASYNC_FILTER_NAME = "async_filter";
+    int ASYNC_FILTER_ORDER=101;
+    String  ASYNC_CALLBACK_URL="/gateway-api/async";
+    String CALLBACK="callback";
+    String CALLBACK_ID="callbackId";
+
+
     String MONITOR_END_FILTER_ID = "monitor_end_filter";
     String MONITOR_END_FILTER_NAME = "monitor_end_filter";
     int MONITOR_END_FILTER_ORDER = Integer.MAX_VALUE - 1;
