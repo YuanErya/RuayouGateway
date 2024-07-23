@@ -14,7 +14,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.ReferenceCountUtil;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,6 +36,8 @@ public class HttpServerCoreProcessor implements HttpProcessor{
         }
         catch(LimitedException  e){
             log.debug(e.getCode().getMessage()+" 请求来自：{}",gatewayContext.getRequest().getClientIp());
+            FullHttpResponse httpResponse = ResponseHelper.getHttpResponse(e.getCode());
+            doWriteAndRelease(ctx, request, httpResponse);
         }
         catch (GatewayException e){
             log.error("发现异常:{}",e.getMessage());
