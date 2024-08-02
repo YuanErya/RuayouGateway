@@ -17,7 +17,6 @@ Netty，SpringBoot，Asynchttp，Nacos，ZooKeeper，Caffeine Cache，Disruptor�
 - 项目使用大量设计模式来提高代码的扩展性。例如责任链，策略，观察者，适配器，工厂，单例模式等。
 
 
-
 ## 使用以及配置
 
 ### 配置文件
