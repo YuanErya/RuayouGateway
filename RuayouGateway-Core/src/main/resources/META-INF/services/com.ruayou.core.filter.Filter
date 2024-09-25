@@ -5,3 +5,5 @@ com.ruayou.core.filter.mock.MockFilter
 com.ruayou.core.filter.flowcontrol.FlowControlFilter
 com.ruayou.core.filter.auth.AuthFilter
 com.ruayou.core.filter.limit.LimitFilter
+com.ruayou.core.filter.asyn.AsyncFilter
+com.ruayou.core.filter.asyn.AsyncGetFilter

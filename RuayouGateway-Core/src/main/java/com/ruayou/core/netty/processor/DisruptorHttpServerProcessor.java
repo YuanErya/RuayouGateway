@@ -14,15 +14,15 @@ import io.netty.handler.codec.http.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DisruptorHttpServerProcessor implements HttpProcessor{
+public class DisruptorHttpServerProcessor implements HttpProcessor {
     private static final String THREAD_NAME_PREFIX = "gateway-queue-";
 
     private HttpServerCoreProcessor processor;
 
-    private CoreParallelQueue<HttpRequestWrapper>  queue;
+    private CoreParallelQueue<HttpRequestWrapper> queue;
 
-    public DisruptorHttpServerProcessor(DisruptorConfig config, HttpServerCoreProcessor processor){
-        this.processor=processor;
+    public DisruptorHttpServerProcessor(DisruptorConfig config, HttpServerCoreProcessor processor) {
+        this.processor = processor;
 
         CoreParallelQueue.Builder<HttpRequestWrapper> builder = new CoreParallelQueue.Builder<HttpRequestWrapper>()
                 .setBufferSize(config.getBufferSize())
@@ -35,6 +35,7 @@ public class DisruptorHttpServerProcessor implements HttpProcessor{
         this.queue = builder.build();
 
     }
+
     @Override
     public void init() {
 
@@ -47,7 +48,7 @@ public class DisruptorHttpServerProcessor implements HttpProcessor{
 
     @Override
     public void close() {
-queue.shutDown();
+        queue.shutDown();
     }
 
     @Override
@@ -57,7 +58,7 @@ queue.shutDown();
 
     @Override
     public void process(HttpRequestWrapper httpRequestWrapper) {
-this.queue.add(httpRequestWrapper);
+        this.queue.add(httpRequestWrapper);
     }
 
 

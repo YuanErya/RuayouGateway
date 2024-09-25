@@ -22,7 +22,7 @@ public class FilterRule {
     /**
      * 协议
      */
-    private String protocol="http";
+    private String protocol = "http";
 
     /**
      * 版本
@@ -35,7 +35,7 @@ public class FilterRule {
     /**
      * 路径匹配模式
      */
-    private Map<String,String> patterns =new HashMap<>();
+    private Map<String, String> patterns = new HashMap<>();
     /**
      * 优先级
      */
@@ -48,7 +48,7 @@ public class FilterRule {
     /**
      * 重试次数配置
      */
-    private RetryConfig retryConfig =new RetryConfig();
+    private RetryConfig retryConfig = new RetryConfig();
     /**
      * Mock配置
      */
@@ -56,7 +56,7 @@ public class FilterRule {
     /**
      * 负载均衡配置
      */
-    private LoadBalanceConfig loadBalanceConfig=new LoadBalanceConfig();
+    private LoadBalanceConfig loadBalanceConfig = new LoadBalanceConfig();
     /**
      * 黑名单配置
      */
@@ -89,19 +89,21 @@ public class FilterRule {
         /**
          * map存储限流规则
          */
-        private Map<String,Integer> flowRule;
+        private Map<String, Integer> flowRule;
     }
+
     @Data
     public static class RetryConfig {
-        private int retryCount =2;
+        private int retryCount = 2;
     }
+
     @Data
     public static class MockConfig {
         /**
          * key:请求方式：路径
          * value：结果
          */
-        Map<String,String> MockMap=new HashMap<>();
+        Map<String, String> MockMap = new HashMap<>();
     }
 
     @Data
@@ -109,7 +111,7 @@ public class FilterRule {
         /**
          * 默认根据ip段
          */
-        private String type=LIMIT_FILTER_TYPE_IP;
+        private String type = LIMIT_FILTER_TYPE_IP;
         /**
          * 限制规则
          */
@@ -119,6 +121,17 @@ public class FilterRule {
     @Data
     public static class LoadBalanceConfig {
         //默认负载均衡是轮询
-        private String strategy =LOAD_BALANCE_STRATEGY_POLLING;
+        private String strategy = LOAD_BALANCE_STRATEGY_POLLING;
+    }
+
+    public static FilterRule getAsyncFilterRule() {
+        FilterRule filterRule = new FilterRule();
+        filterRule.setRuleId("async");
+        filterRule.setProtocol("http");
+        filterRule.setVersion("1.0.0");
+        filterRule.setServiceIds(new ArrayList<>());
+        filterRule.setFilters(Arrays.asList("async_get_filter"));
+        return filterRule;
+
     }
 }

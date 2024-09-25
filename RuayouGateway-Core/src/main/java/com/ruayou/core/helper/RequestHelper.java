@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.ruayou.common.constant.FilterConst.ASYNC_CALLBACK_URL;
+import static com.ruayou.common.constant.ServiceConst.DEFAULT_PROTOCOL;
 import static com.ruayou.common.enums.ResponseCode.SERVICE_DEFINITION_NOT_FOUND;
 
 /**
@@ -39,6 +41,11 @@ public class RequestHelper {
     public static GatewayContext buildContext(FullHttpRequest request, ChannelHandlerContext ctx) {
         GatewayRequest gateWayRequest = buildGatewayRequest(request, ctx);
         String path=gateWayRequest.getPath();
+        if (ASYNC_CALLBACK_URL.equals(path)) {
+            return new GatewayContext(DEFAULT_PROTOCOL, ctx,
+                    HttpUtil.isKeepAlive(request), gateWayRequest,null, FilterRule.getAsyncFilterRule(), 0);
+        }
+
         FilterRule filterRule = ServiceAndInstanceManager.getManager().getRuleByPath(path);
 
         String serviceId=serviceIdCache.get(path, k-> getServiceIdByPath(path,filterRule));
